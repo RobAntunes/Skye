@@ -1,10 +1,10 @@
-import { TresComponent } from './src/components/core/TresComponent.ts';
+import { SkyeComponent } from './src/client/components/core/SkyeComponent.ts';
 
-export class App extends TresComponent {
+export class App extends SkyeComponent {
   constructor() {
     super({
       count: 0,
-      message: 'Welcome to Tres.js!'
+      message: 'Welcome to Skye.js!'
     });
   }
 

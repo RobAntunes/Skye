@@ -1,7 +1,7 @@
-import { TresComponent } from "./TresComponent.ts";
+import { SkyeComponent } from "./SkyeComponent.ts";
 
-// Extend TresComponent to create a simple test component
-class UserComponent extends TresComponent {
+// Extend SkyeComponent to create a simple test component
+class UserComponent extends SkyeComponent {
     constructor() {
       super({ user: { name: 'John Doe' } });  // Initialize with some state
     }

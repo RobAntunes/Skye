@@ -1,6 +1,6 @@
 import breakpoints from "../../lib/utils/breakpoints.ts";
 
-class TresPadding extends HTMLElement {
+class SkyePadding extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -74,4 +74,4 @@ class TresPadding extends HTMLElement {
   }
 }
 
-customElements.define("tres-p", TresPadding);
+customElements.define("Skye-p", SkyePadding);
