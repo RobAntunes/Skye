@@ -19,7 +19,7 @@ Skye is a new full-stack JavaScript framework designed for building high-perform
 ```typescript
 import { reactive, createEffect } from "skye";
 
-const state = reactive<{ count: number, name: string }>()({ 
+const state = reactive<{ count: number, name: string }>({ 
   count: 0, 
   name: "Skye" 
 });
