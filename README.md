@@ -24,7 +24,7 @@ const state = reactive<{ count: number, name: string }>({
   name: "Skye" 
 });
 
-effect(() => {
+effect({
   console.log("Count:", state.count); 
   console.log("Name:", state.name);   
 });
