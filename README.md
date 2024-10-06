@@ -1,4 +1,4 @@
-## Skye.js: A Modern Full-Stack JavaScript Framework
+## Skye: A Modern Full-Stack JavaScript Framework
 
 Skye is a new full-stack JavaScript framework designed for building high-performance, scalable web applications. It prioritizes developer experience, ease of use, and automated testing.
 
