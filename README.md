@@ -1,38 +1,38 @@
-## Skye.js: A Modern Full-Stack JavaScript Framework
+## Skye: A Modern Full-Stack JavaScript Framework
 
-Skye.js is a new full-stack JavaScript framework designed for building high-performance, scalable web applications. It prioritizes developer experience, ease of use, and automated testing.
+Skye is a new full-stack JavaScript framework designed for building high-performance, scalable web applications. It prioritizes developer experience, ease of use, and automated testing.
 
 **Key Features:**
 
-* **AI-Powered Automated Testing:** Eliminate manual testing with AI-generated test cases. Skye.js analyzes your components and state interactions to create comprehensive tests, saving you time and effort. (This feature can be accessed via a paid API or by integrating with other AI testing providers.)
+* **AI-Powered Automated Testing:** Eliminate manual testing with AI-generated test cases. Skye analyzes your components and state interactions to create comprehensive tests, saving you time and effort. (This feature can be accessed via a paid API or by integrating with other AI testing providers.)
 * **WASM-First, Component-Based Reactivity:**  Experience blazing-fast performance with a WASM-powered reactivity engine (planned for post-MVP). Components update independently in response to state changes, eliminating the need for a virtual DOM and reducing unnecessary re-renders.
 * **Two-Way Data Binding:** Simplify state management with intuitive two-way data binding. Components directly reflect changes in the underlying data, making your code cleaner and easier to reason about.
-* **Modular Architecture:** Skye.js is highly modular, allowing you to use only the features you need. Choose from a variety of modules for routing, API integration, server-side rendering, and more.
-* **Kotlin-Inspired Reactivity:** Enjoy a simple and elegant reactivity system inspired by Kotlin Multiplatform. Reassign state values directly without the need for complex setter functions.
-* **Separation of Concerns:** Write maintainable code with a clear separation of concerns. Skye.js provides tooling to easily navigate between component logic, styles, and templates.
-* **Custom Templating Language:** Leverage a custom templating language designed to seamlessly integrate with Skye.js's reactivity system.
+* **Modular Architecture:** Skye is highly modular, allowing you to use only the features you need. Choose from a variety of modules for routing, API integration, server-side rendering, and more.
+* **Simple Reactivity:** Enjoy a simple and elegant reactivity system. Reassign state values directly without the need for complex setter functions.
+* **Separation of Concerns:** Write maintainable code with a clear separation of concerns. Skye provides tooling to easily navigate between component logic, styles, and templates.
+* **Custom Templating Language:** Leverage a custom templating language designed to seamlessly integrate with Skye's reactivity system.
 * **TypeScript First:** Benefit from type safety and improved code readability with TypeScript.
 * **Full-Stack Capabilities:** Build complete web applications with server-side rendering (SSR) and API integration modules.
 
 **Getting Started:**
 
 ```typescript
-import { reactive, createEffect } from "Skyejs";
+import { reactive, effect } from "skye";
 
-const state = reactive<{ count: number, name: string }>()({ 
+const state = reactive<{ count: number, name: string }>({ 
   count: 0, 
   name: "Skye" 
 });
 
-createEffect(() => {
+effect({
   console.log("Count:", state.count); 
   console.log("Name:", state.name);   
 });
 ```
 
-# Skye.js Reactivity Engine
+# Skye's Reactivity Engine
 
-Skye.js features a powerful and efficient reactivity system that allows you to build dynamic and responsive applications. It automatically tracks dependencies between your data and your code, ensuring that your application stays in sync with any changes in the underlying state.
+Skye features a powerful and efficient reactivity system that allows you to build dynamic and responsive applications. It automatically tracks dependencies between your data and your code, ensuring that your application stays in sync with any changes in the underlying state.
 
 ## Core Concepts
 
@@ -111,9 +111,8 @@ rerender(); // Trigger a re-render to reflect the changes
 
 - **Enhanced Developer Experience**: The intuitive API and automatic dependency tracking make it easier to build dynamic and responsive applications.
 
-**Continuing with Suspended Functions**
-
-Now, let's pick up where we left off with suspended functions and the `rerender` function.
+**Suspended Functions**
+Skye rerenders & updates state in real time and picks up where the state change left off so that you get instant updates without needing to batch, giving you complete control and easy reasoning about your components.
 
 **Recall the `runEffect` function**
 
@@ -141,9 +140,9 @@ function runEffect(effect: EffectFn): void {
 }
 ```
 
-# Skye.js Server
+# Skye Server
 
-The Skye.js Server is a powerful and flexible server implementation designed to work seamlessly with the Skye.js framework. It provides a robust foundation for building scalable and reactive web applications.
+The Skye Server is a powerful and flexible server implementation designed to work seamlessly with the Skye framework. It provides a robust foundation for building scalable and reactive web applications.
 
 ## Key Features
 
@@ -157,7 +156,7 @@ The Skye.js Server is a powerful and flexible server implementation designed to 
 ## Basic Usage
 
 ```typescript
-import { SkyeServer } from './Skye-server';
+import { SkyeServer } from './skye-server';
 
 const server = new SkyeServer();
 
@@ -185,7 +184,7 @@ Deno.serve({ port: 8000 }, (req) => server.handleRequest(req));
 
 ### Context Object
 
-The `Context` object is at the heart of the Skye.js Server. It encapsulates all the information about the current request and response, and is passed through all middleware and route handlers.
+The `Context` object is at the heart of the Skye's Server. It encapsulates all the information about the current request and response, and is passed through all middleware and route handlers. (Incomplete)
 
 ```typescript
 interface Context {
@@ -208,7 +207,7 @@ interface Context {
 
 ### Middleware
 
-Middleware functions in Skye.js Server have the following signature:
+Middleware functions in Skye Server have the following signature:
 
 ```typescript
 type Middleware = (ctx: Context, next: () => Promise<void>) => Promise<void>;
@@ -218,7 +217,7 @@ Middleware can perform operations before and after the next middleware or route 
 
 ### Routing
 
-The Skye.js Server supports flexible routing with pattern matching and route parameters. Routes are defined using the `route` method:
+The Skye Server supports flexible routing with pattern matching and route parameters. Routes are defined using the `route` method:
 
 ```typescript
 server.route(method: string, path: string, handler: (ctx: Context) => Promise<void>)
@@ -228,7 +227,7 @@ Route parameters (e.g., `:id` in `/users/:id`) are automatically parsed and avai
 
 ### Server-side Reactivity
 
-Skye.js Server introduces a novel concept of server-side reactivity. This allows you to maintain reactive state on the server, which can be useful for various purposes such as caching, real-time updates, or session management.
+Skye Server introduces a novel concept of server-side reactivity. This allows you to maintain reactive state on the server, which can be useful for various purposes such as caching, real-time updates, or session management.
 
 ```typescript
 const createReactiveMiddleware = () => {
@@ -250,15 +249,8 @@ server.use(createReactiveMiddleware());
 
 This reactive state can be accessed and modified in your route handlers or other middleware.
 
-## Best Practices
-
-1. **Modular Design**: Organize your server code into modules for better maintainability.
-2. **Error Handling**: Always include error handling middleware to catch and process errors gracefully.
-3. **Logging**: Use logging middleware for debugging and monitoring your application.
-4. **Validation**: Implement request validation middleware to ensure data integrity.
-5. **Security**: Include security middleware (e.g., CORS, helmet) to protect your application.
-6. **Testing**: Write unit and integration tests for your server, routes, and middleware.
-
 ## Conclusion
 
 The Skye.js Server provides a powerful and flexible foundation for building modern web applications. By leveraging its advanced features like middleware, routing, and server-side reactivity, you can create scalable and efficient server-side applications that integrate seamlessly with the Skye.js framework.
+
+## TODO: ONGOING
