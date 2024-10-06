@@ -112,6 +112,7 @@ rerender(); // Trigger a re-render to reflect the changes
 - **Enhanced Developer Experience**: The intuitive API and automatic dependency tracking make it easier to build dynamic and responsive applications.
 
 **Suspended Functions**
+Skye rerenders & updates state in real time and picks up where the state change left off so that you get instant updates without needing to batch, giving you complete control and easy reasoning about your components.
 
 **Recall the `runEffect` function**
 
@@ -139,9 +140,9 @@ function runEffect(effect: EffectFn): void {
 }
 ```
 
-# Skye.js Server
+# Skye Server
 
-The Skye.js Server is a powerful and flexible server implementation designed to work seamlessly with the Skye.js framework. It provides a robust foundation for building scalable and reactive web applications.
+The Skye Server is a powerful and flexible server implementation designed to work seamlessly with the Skye framework. It provides a robust foundation for building scalable and reactive web applications.
 
 ## Key Features
 
@@ -206,7 +207,7 @@ interface Context {
 
 ### Middleware
 
-Middleware functions in Skye's Server have the following signature:
+Middleware functions in Skye Server have the following signature:
 
 ```typescript
 type Middleware = (ctx: Context, next: () => Promise<void>) => Promise<void>;
