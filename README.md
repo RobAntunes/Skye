@@ -140,6 +140,168 @@ function runEffect(effect: EffectFn): void {
 }
 ```
 
+## Advanced Reactivity Tuning
+
+Skye provides fine-grained control over how reactivity and effects are handled, allowing you to optimize performance, control execution order, and manage state updates more efficiently.
+
+### Core Reactivity Hooks
+
+#### priority(order, fn)
+
+Executes effects in a defined order of priority. Higher priority effects run before lower priority ones.
+
+```typescript
+priority(1, () => {
+  effect(() => {
+    console.log("High priority effect");
+  });
+});
+```
+
+#### debounce(delay, fn)
+
+Ensures the effect is delayed and only executed after the specified delay has passed without further state changes.
+
+```typescript
+debounce(300, () => {
+  effect(() => {
+    console.log("Debounced effect");
+  });
+});
+```
+
+#### throttle(interval, fn)
+
+Limits how frequently an effect can run, ensuring it only executes at most once during the specified interval.
+
+```typescript
+throttle(1000, () => {
+  effect(() => {
+    console.log("Throttled effect");
+  });
+});
+```
+
+#### batch(fn)
+
+Groups multiple state updates or effects together, ensuring they are executed simultaneously to avoid unnecessary re-renders.
+
+```typescript
+batch(() => {
+  effect(() => {
+    console.log("Batched effect");
+  });
+});
+```
+
+#### lazy(fn)
+
+Defers effect execution until explicitly triggered.
+
+```typescript
+lazy(() => {
+  effect(() => {
+    console.log("Lazy effect, only triggered when needed");
+  });
+});
+```
+
+#### pause(fn) and resume(fn)
+
+Gives control over when an effect is paused and resumed, allowing effects to be deferred during heavy computations.
+
+```typescript
+pause(() => {
+  effect(() => {
+    console.log("Effect is paused");
+  });
+});
+
+resume(() => {
+  effect(() => {
+    console.log("Effect resumed");
+  });
+});
+```
+
+#### limit(times, fn)
+
+Restricts how many times an effect can run.
+
+```typescript
+limit(3, () => {
+  effect(() => {
+    console.log("This effect will only run 3 times");
+  });
+});
+```
+
+### Worker Pool for Parallel Processing
+
+Skye introduces a worker pool for parallel execution, allowing you to offload heavy computations or async tasks into background workers, improving performance without blocking the main thread.
+
+#### Creating a Worker Pool
+
+```typescript
+class WorkerPool {
+  constructor(maxWorkers: number) {
+    // Initialize workers
+  }
+
+  submitTask(task: any) {
+    // Submit tasks to the worker pool
+  }
+
+  // Handle task execution, message passing, etc.
+}
+```
+
+#### Using parallel to Run Tasks in Parallel
+
+Skye provides a parallel function to run effects in parallel using the worker pool.
+
+```typescript
+parallel(() => {
+  effect(() => {
+    // Heavy computation that runs in parallel
+    console.log("Running in parallel");
+  });
+}, { maxWorkers: 4 });
+```
+
+Handling Asynchronous Operations: effect.obtain
+
+Skye introduces the obtain function to manage complex asynchronous operations with options like caching, retries, pagination, and parallel processing.
+
+obtain API
+
+Parameters:
+
+	•	asyncOperation: A function that returns a promise (e.g., an API call).
+	•	options: An object containing:
+	•	cache: Enables caching of the result.
+	•	paginate: Handles pagination for large datasets.
+	•	maxCacheAge: Controls how long the cache is valid.
+	•	retries: Number of retries if the operation fails.
+	•	parallel: Enables running the operation in parallel using a worker pool.
+	•	maxWorkers: Defines the number of workers for parallel execution.
+	•	batch: Batches multiple async operations for efficiency.
+
+Example Usage:
+
+```typescript
+effect.obtain(async () => {
+  const data = await fetch('https://api.example.com/data').then(res => res.json());
+  return data;
+}, {
+  cache: true,
+  retries: 3,
+  parallel: true,
+  maxWorkers: 4,
+});
+```
+
+
 # Skye Server
 
 The Skye Server is a powerful and flexible server implementation designed to work seamlessly with the Skye framework. It provides a robust foundation for building scalable and reactive web applications.
@@ -251,6 +413,8 @@ This reactive state can be accessed and modified in your route handlers or other
 
 ## Conclusion
 
-The Skye.js Server provides a powerful and flexible foundation for building modern web applications. By leveraging its advanced features like middleware, routing, and server-side reactivity, you can create scalable and efficient server-side applications that integrate seamlessly with the Skye.js framework.
+The Skye Server provides a powerful and flexible foundation for building modern web applications. By leveraging its advanced features like middleware, routing, and server-side reactivity, you can create scalable and efficient server-side applications that integrate seamlessly with the Skye framework.
+
+Skye provides an advanced reactivity system, powerful async operation handling, and parallel execution features through worker pools. By combining these tools, Skye ensures high performance and scalability in modern web applications while giving developers full control over how their applications behave.
 
 ## TODO: ONGOING
