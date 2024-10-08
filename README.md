@@ -28,7 +28,8 @@ effect({
   log() {
         console.log("Count:", state.count);
         console.log("Name:", state.name);
-    });
+    }
+});
 ```
 
 ## Skye's Reactivity Engine
