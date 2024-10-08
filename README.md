@@ -328,10 +328,10 @@ Skye provides a hybrid responsiveness solution, allowing you to build responsive
 
 ### Key Features:
 
-- 1.	Opt-in Responsiveness: Skye’s components are responsive by default, but developers can easily opt-out or customize the behavior.
--	2.	Custom Utility Components: Pre-built, extensible components like SkyeGrid and SkyeSpacing provide common responsive patterns that can be used directly in templates.
--	3.	Easy Customization: Developers can extend the provided utility components or create new ones using JavaScript, giving them more flexibility than pure CSS solutions.
--	4.	Viewport-Based Sizing: Automatically adjust layouts, padding, margins, and font sizes based on the viewport, ensuring fluid scaling across devices.
+- Opt-in Responsiveness: Skye’s components are responsive by default, but developers can easily opt-out or customize the behavior.
+- Custom Utility Components: Pre-built, extensible components like SkyeGrid and SkyeSpacing provide common responsive patterns that can be used directly in templates.
+- Easy Customization: Developers can extend the provided utility components or create new ones using JavaScript, giving them more flexibility than pure CSS solutions.
+- Viewport-Based Sizing: Automatically adjust layouts, padding, margins, and font sizes based on the viewport, ensuring fluid scaling across devices.
 
 ### Opt-in/Opt-out Responsiveness
 
@@ -457,11 +457,11 @@ Functional components in Skye allow developers to define their UI declaratively 
 
 ### Key Features
 
-- 1.	Declarative UI: Define your UI with simple, functional components that are easy to reason about.
-- 2.	Native Web Components: Skye compiles your functional components into efficient web components for native browser support.
-- 3.	Automatic Reactivity: Skye’s reactivity engine ensures your components update automatically when state changes.
-- 4.	Responsiveness and Accessibility: Skye components are responsive and accessible by default, with easy customization options.
-- 5.	Automatic Cleanup: Skye automatically handles cleanup of effects and state when components are unmounted, so developers don’t need to manage unmounting.
+- Declarative UI: Define your UI with simple, functional components that are easy to reason about.
+- Native Web Components: Skye compiles your functional components into efficient web components for native browser support.
+- Automatic Reactivity: Skye’s reactivity engine ensures your components update automatically when state changes.
+- Responsiveness and Accessibility: Skye components are responsive and accessible by default, with easy customization options.
+- Automatic Cleanup: Skye automatically handles cleanup of effects and state when components are unmounted, so developers don’t need to manage unmounting.
 
 ### Defining Functional Components
 
@@ -619,9 +619,9 @@ In Skye, templates are cached to prevent unnecessary re-rendering, improving ove
 
 How It Works:
 
-- 1.	Template Hashing: Each template is hashed using BLAKE3 before rendering.
-- 2.	Cache Check: Before rendering, Skye checks if the current template’s hash matches the cached hash. If the template hasn’t changed, it skips re-rendering.
-- 3.	Cache Update: If the template has changed, Skye updates the cache with the new hash and renders the template.
+- Template Hashing: Each template is hashed using BLAKE3 before rendering.
+- Cache Check: Before rendering, Skye checks if the current template’s hash matches the cached hash. If the template hasn’t changed, it skips re-rendering.
+- Cache Update: If the template has changed, Skye updates the cache with the new hash and renders the template.
 
 Example:
 
@@ -709,6 +709,31 @@ function renderTemplateWithReactivity(template: string, state: Record<string, an
     }
   });
 }
+```
+
+### Arbitrary Javascript
+Skye forgoes a formal templating language and instead gives you the full power of javascript inside html.
+Use what you know without limitations, skye lets you interpolate variables, define variables and run functions, and interpolate the return value from arbitrarily complax expressions.
+
+```typescript
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
+    <p>You have visited this page {{ count }} times.</p>
+    <p>{{ skye`${() => { 
+      console.log("This is arbitrary JavaScript inside a template"); 
+      return "This text is returned from the skye function";
+    }}` }}</p>
+    <p>{{ skye`Current time: ${new Date().toLocaleTimeString()}` }}</p>
+    <script src="/public/app.js"></script>
+  </body>
+</html>
 ```
 
 ### Performance Optimizations
