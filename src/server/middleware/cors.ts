@@ -1,4 +1,4 @@
-import { type Context } from "../index.ts";
+import { type Context } from "../server.ts";
 
 export const corsMiddleware = async (
   ctx: Context,

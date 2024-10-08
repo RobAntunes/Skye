@@ -1,4 +1,4 @@
-import type { Context } from "../index.ts";
+import type { Context } from "../server.ts";
 
 export class Router {
   private routes: Map<string, Map<string, (ctx: Context) => Promise<void>>> =

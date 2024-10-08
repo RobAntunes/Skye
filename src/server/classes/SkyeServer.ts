@@ -1,4 +1,4 @@
-import type { Middleware, Context } from "../index.ts";
+import type { Middleware, Context } from "../server.ts";
 import { Router } from "./Router.ts";
 
 export class SkyeServer {

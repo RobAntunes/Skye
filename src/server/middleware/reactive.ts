@@ -1,5 +1,5 @@
 import { reactive } from "../../client/reactivity/reactive.ts";
-import type { Context, Middleware } from "../index.ts";
+import type { Context, Middleware } from "../server.ts";
 
 // Server-side reactivity
 export const createReactiveMiddleware = () => {

@@ -1,29 +1,12 @@
-<!-- dist/test.html -->
-
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Skye</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-      }
-      h1 {
-        color: #333;
-      }
-      .test-component {
-        margin-bottom: 20px;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Welcome to Skye</h1>
-    <script>
-      window.addEventListener("load", () => {
-        
-      });
-    </script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Skye SSR and Templating Engine Tests</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <!-- The content will be injected by the server-rendered templates -->
+  <script src="/dist/main.js"></script> <!-- Include only necessary JS -->
+</body>
 </html>

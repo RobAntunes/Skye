@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../src/client/functions/utils/readonly.ts"],
-  "sourcesContent": ["export function readonly<T extends object>(target: T): T {\n    return new Proxy(target, {\n      get(obj, prop: PropertyKey, receiver) {\n        // Directly return the property without tracking dependencies\n        return Reflect.get(obj, prop, receiver);\n      },\n      set(_obj, prop: PropertyKey, _value: any) {\n        throw new Error(`Cannot set property '${String(prop)}' on read-only state.`);\n      },\n      deleteProperty(_obj, prop: PropertyKey) {\n        throw new Error(`Cannot delete property '${String(prop)}' on read-only state.`);\n      },\n      defineProperty(_obj, prop: PropertyKey, _descriptor: PropertyDescriptor) {\n        throw new Error(`Cannot define property '${String(prop)}' on read-only state.`);\n      },\n      setPrototypeOf(_obj, _proto: object | null) {\n        throw new Error(`Cannot set prototype on read-only state.`);\n      },\n    });\n  }"],
-  "mappings": ";AAAO,SAAS,SAA2B,QAAc;AACrD,SAAO,IAAI,MAAM,QAAQ;AAAA,IACvB,IAAI,KAAK,MAAmB,UAAU;AAEpC,aAAO,QAAQ,IAAI,KAAK,MAAM,QAAQ;AAAA,IACxC;AAAA,IACA,IAAI,MAAM,MAAmB,QAAa;AACxC,YAAM,IAAI,MAAM,wBAAwB,OAAO,IAAI,CAAC,uBAAuB;AAAA,IAC7E;AAAA,IACA,eAAe,MAAM,MAAmB;AACtC,YAAM,IAAI,MAAM,2BAA2B,OAAO,IAAI,CAAC,uBAAuB;AAAA,IAChF;AAAA,IACA,eAAe,MAAM,MAAmB,aAAiC;AACvE,YAAM,IAAI,MAAM,2BAA2B,OAAO,IAAI,CAAC,uBAAuB;AAAA,IAChF;AAAA,IACA,eAAe,MAAM,QAAuB;AAC1C,YAAM,IAAI,MAAM,0CAA0C;AAAA,IAC5D;AAAA,EACF,CAAC;AACH;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../../../../src/client/lib/utils/breakpoints.ts"],
-  "sourcesContent": ["export default {\n  sm: 640,\n  md: 768,\n  lg: 1024,\n  xl: 1280,\n};\n"],
-  "mappings": ";AAAA,IAAO,sBAAQ;AAAA,EACb,IAAI;AAAA,EACJ,IAAI;AAAA,EACJ,IAAI;AAAA,EACJ,IAAI;AACN;",
-  "names": []
-}

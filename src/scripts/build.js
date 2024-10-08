@@ -1,43 +1,57 @@
-import * as esbuild from "npm:esbuild";
-import { denoPlugins } from "jsr:@luca/esbuild-deno-loader";
-import { walk } from "https://deno.land/std/fs/mod.ts";
+import * as esbuild from "https://deno.land/x/esbuild@v0.24.0/mod.js"; // The helper function to gather all HTML files
+import { ensureDir, copy } from "jsr:@std/fs";
+import { denoPlugins } from "https://jsr.io/@luca/esbuild-deno-loader/0.10.3/mod.ts";
+import { expandGlob } from "jsr:@std/fs";
+import { join, dirname, relative } from "jsr:@std/path@0.213/";
 
-// Collect all .ts files from the client directory
-async function getAllTsFiles(dir) {
-  const tsFiles = [];
-  for await (const entry of walk(dir, { exts: [".ts"], includeDirs: false })) {
-    tsFiles.push(entry.path);
+// Function to gather all HTML files
+export async function getAllHTMLFiles(directory) {
+  const htmlFiles = [];
+
+  const templateDir = join(Deno.cwd(), "src/client/templates/custom"); // Source directory
+  const publicDir = join(Deno.cwd(), "public/dist/templates/custom"); // Destination directory
+
+  for await (const file of expandGlob(`${templateDir}/**/*.html`)) {
+    const stat = await Deno.stat(file.path);
+
+    if (stat.isFile) {
+      const destPath = join(
+        publicDir,
+        relative(templateDir, file.path)
+      );
+      await ensureDir(dirname(destPath)); // Ensure the destination directory exists
+      await copy(file.path, destPath);
+      console.log(`Copied: ${file.path} -> ${destPath}`);
+    } else {
+      console.log(`Skipping directory: ${file.path}`);
+    }
   }
-  return tsFiles;
 }
 
-async function buildAllTsFiles() {
-  const tsFiles = await getAllTsFiles("src/client");
+// Gather all HTML files from the "src" directory
+const htmlFiles = await getAllHTMLFiles("./src/client");
 
-  esbuild
-    .build({
-      entryPoints: tsFiles, // Transpile each file separately
-      outdir: "public/dist", // Output directory
-      format: "esm", // ES module format
-      target: ["es2020"], // Target modern JavaScript
-      minify: false, // Don't minify the code
-      sourcemap: true, // Include source maps for debugging
-      plugins: [...denoPlugins()],
-      platform: "browser",
-      bundle: true, // Bundle external dependencies
-      loader: {
-        ".ts": "ts", // TypeScript files
-        ".js": "js", // JavaScript files
-        ".wasm": "binary", // WebAssembly (if needed)
-      },
-    })
-    .then(() => {
-      console.log("Done");
-    })
-    .catch((error) => {
-      console.error("Build failed:", error);
-      process.exit(1);
-    });
-}
+// Run Esbuild for bundling JS/TS files
+esbuild
+  .build({
+    entryPoints: ["src/client/main.ts"],
+    bundle: true,
+    outfile: "dist/main.js",
+    format: "esm",
+    target: ["es2020"],
+    sourcemap: true,
+    minify: false,
+    plugins: [...denoPlugins()],
+  })
+  .then(async () => {
+    console.log("JavaScript build finished!");
 
-buildAllTsFiles();
+    console.log("HTML files copied successfully!");
+  })
+  .catch((error) => {
+    console.error("Build failed:", error);
+    Deno.exit(1);
+  })
+  .finally(() => {
+    esbuild.stop();
+  });

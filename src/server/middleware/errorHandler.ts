@@ -1,4 +1,4 @@
-import type { Middleware } from "../index.ts";
+import type { Middleware } from "../server.ts";
 
 export const errorHandler: Middleware = async (ctx, next) => {
     try {
