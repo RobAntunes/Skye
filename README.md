@@ -25,9 +25,10 @@ const state = reactive<{ count: number, name: string }>({
 });
 
 effect({
-  console.log("Count:", state.count); 
-  console.log("Name:", state.name);   
-});
+  log() {
+        console.log("Count:", state.count);
+        console.log("Name:", state.name);
+    });
 ```
 
 ## Skye's Reactivity Engine
