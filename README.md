@@ -1,18 +1,18 @@
-## Skye: A Modern Full-Stack JavaScript Framework
+# Skye: A Modern Full-Stack JavaScript Framework
 
 Skye is a new full-stack JavaScript framework designed for building high-performance, scalable web applications. It prioritizes developer experience, ease of use, and automated testing.
 
-**Key Features:**
+## Key Features:
 
-* **AI-Powered Automated Testing:** Eliminate manual testing with AI-generated test cases. Skye analyzes your components and state interactions to create comprehensive tests, saving you time and effort. (This feature can be accessed via a paid API or by integrating with other AI testing providers.)
-* **WASM-First, Component-Based Reactivity:**  Experience blazing-fast performance with a WASM-powered reactivity engine (planned for post-MVP). Components update independently in response to state changes, eliminating the need for a virtual DOM and reducing unnecessary re-renders.
-* **Two-Way Data Binding:** Simplify state management with intuitive two-way data binding. Components directly reflect changes in the underlying data, making your code cleaner and easier to reason about.
-* **Modular Architecture:** Skye is highly modular, allowing you to use only the features you need. Choose from a variety of modules for routing, API integration, server-side rendering, and more.
-* **Simple Reactivity:** Enjoy a simple and elegant reactivity system. Reassign state values directly without the need for complex setter functions.
-* **Separation of Concerns:** Write maintainable code with a clear separation of concerns. Skye provides tooling to easily navigate between component logic, styles, and templates.
-* **Custom Templating Language:** Leverage a custom templating language designed to seamlessly integrate with Skye's reactivity system.
-* **TypeScript First:** Benefit from type safety and improved code readability with TypeScript.
-* **Full-Stack Capabilities:** Build complete web applications with server-side rendering (SSR) and API integration modules.
+- **AI-Powered Automated Testing:** Eliminate manual testing with AI-generated test cases. Skye analyzes your components and state interactions to create comprehensive tests, saving you time and effort. (This feature can be accessed via a paid API or by integrating with other AI testing providers.)
+- **WASM-First, Component-Based Reactivity:**  Experience blazing-fast performance with a WASM-powered reactivity engine (planned for post-MVP). Components update independently in response to state changes, eliminating the need for a virtual DOM and reducing unnecessary re-renders.
+- **Two-Way Data Binding:** Simplify state management with intuitive two-way data binding. Components directly reflect changes in the underlying data, making your code cleaner and easier to reason about.
+- **Modular Architecture:** Skye is highly modular, allowing you to use only the features you need. Choose from a variety of modules for routing, API integration, server-side rendering, and more.
+- **Simple Reactivity:** Enjoy a simple and elegant reactivity system. Reassign state values directly without the need for complex setter functions.
+- **Separation of Concerns:** Write maintainable code with a clear separation of concerns. Skye provides tooling to easily navigate between component logic, styles, and templates.
+- **Custom Templating Language:** Leverage a custom templating language designed to seamlessly integrate with Skye's reactivity system.
+- **TypeScript First:** Benefit from type safety and improved code readability with TypeScript.
+- **Full-Stack Capabilities:** Build complete web applications with server-side rendering (SSR) and API integration modules.
 
 **Getting Started:**
 
@@ -30,11 +30,11 @@ effect({
 });
 ```
 
-# Skye's Reactivity Engine
+## Skye's Reactivity Engine
 
 Skye features a powerful and efficient reactivity system that allows you to build dynamic and responsive applications. It automatically tracks dependencies between your data and your code, ensuring that your application stays in sync with any changes in the underlying state.
 
-## Core Concepts
+### Core Concepts
 
 - **Reactive Objects:**  Objects created using `reactive()` become reactive. Any changes to their properties will trigger updates in the parts of your application that depend on those properties.
 
@@ -59,7 +59,7 @@ Creates a reactive proxy around the given `target` object.
 **Example:**
 
 ```typescript
-import { reactive } from 'Skyejs';
+import { reactive } from 'skye';
 
 const state = reactive({ count: 0 });
 
@@ -74,7 +74,7 @@ effect(effects)
 
 // Example:
 
-import { reactive, effect } from 'Skyejs';
+import { reactive, effect } from 'skye';
 
 const state = reactive({ count: 0 });
 
@@ -91,13 +91,13 @@ rerender()
 
 // Example:
 
-import { rerender } from 'Skyejs';
+import { rerender } from 'skye';
 
 // ... some asynchronous operation that updates the state ...
 
 rerender(); // Trigger a re-render to reflect the changes
 ```
-## Advanced Usage
+### Advanced Usage
 - **Nested Objects**: The reactivity system automatically handles nested objects. Changes to properties within nested objects will trigger updates in the dependent effects.
 
 - **Arrays**:  Changes to arrays (adding, removing, or modifying elements) will also trigger updates.
@@ -152,8 +152,10 @@ Executes effects in a defined order of priority. Higher priority effects run bef
 
 ```typescript
 priority(1, () => {
-  effect(() => {
-    console.log("High priority effect");
+  effect({
+    doSomething() {
+      console.log("High priority effect");
+    }
   });
 });
 ```
@@ -164,8 +166,10 @@ Ensures the effect is delayed and only executed after the specified delay has pa
 
 ```typescript
 debounce(300, () => {
-  effect(() => {
-    console.log("Debounced effect");
+  effect({
+    doSomething() {
+      console.log("Debounced effect");
+    }
   });
 });
 ```
@@ -176,9 +180,10 @@ Limits how frequently an effect can run, ensuring it only executes at most once 
 
 ```typescript
 throttle(1000, () => {
-  effect(() => {
-    console.log("Throttled effect");
-  });
+  effect({
+    doSomething() {
+     console.log("Throttled effect");
+  }});
 });
 ```
 
@@ -188,8 +193,10 @@ Groups multiple state updates or effects together, ensuring they are executed si
 
 ```typescript
 batch(() => {
-  effect(() => {
-    console.log("Batched effect");
+  effect({
+    doSomething() {
+      console.log("Batched effect");
+    }
   });
 });
 ```
@@ -200,8 +207,10 @@ Defers effect execution until explicitly triggered.
 
 ```typescript
 lazy(() => {
-  effect(() => {
-    console.log("Lazy effect, only triggered when needed");
+  effect({
+    doSomething() {
+      console.log("Lazy effect, only triggered when needed");
+    }
   });
 });
 ```
@@ -212,14 +221,18 @@ Gives control over when an effect is paused and resumed, allowing effects to be 
 
 ```typescript
 pause(() => {
-  effect(() => {
-    console.log("Effect is paused");
+  effect({
+    doSomething() {
+      console.log("Effect is paused");
+    }
   });
 });
 
 resume(() => {
-  effect(() => {
-    console.log("Effect resumed");
+  effect({
+    doSomething() {
+      console.log("Effect resumed");
+    }
   });
 });
 ```
@@ -230,8 +243,10 @@ Restricts how many times an effect can run.
 
 ```typescript
 limit(3, () => {
-  effect(() => {
-    console.log("This effect will only run 3 times");
+  effect({
+    doSomething() {
+      console.log("This effect will only run 3 times");
+    }
   });
 });
 ```
@@ -262,9 +277,11 @@ Skye provides a parallel function to run effects in parallel using the worker po
 
 ```typescript
 parallel(() => {
-  effect(() => {
-    // Heavy computation that runs in parallel
+  effect({
+    doStuff () {
+      // Heavy computation that runs in parallel
     console.log("Running in parallel");
+    }
   });
 }, { maxWorkers: 4 });
 ```
@@ -290,9 +307,12 @@ Parameters:
 Example Usage:
 
 ```typescript
-effect.obtain(async () => {
-  const data = await fetch('https://api.example.com/data').then(res => res.json());
-  return data;
+effect.obtain({
+  async getData() {
+    const data = await fetch('https://api.example.com/data')
+    const res = await data.json()
+    return res;
+  }
 }, {
   cache: true,
   retries: 3,
@@ -301,6 +321,401 @@ effect.obtain(async () => {
 });
 ```
 
+## Skye: Hybrid Responsiveness and Utility Components
+
+Skye provides a hybrid responsiveness solution, allowing you to build responsive components effortlessly, with flexibility to customize or opt out when needed. This system combines CSS variables, viewport-based sizing, Flexbox/Grid layouts, and utility classes, giving developers full control over responsiveness.
+
+### Key Features:
+
+- 1.	Opt-in Responsiveness: Skye’s components are responsive by default, but developers can easily opt-out or customize the behavior.
+-	2.	Custom Utility Components: Pre-built, extensible components like SkyeGrid and SkyeSpacing provide common responsive patterns that can be used directly in templates.
+-	3.	Easy Customization: Developers can extend the provided utility components or create new ones using JavaScript, giving them more flexibility than pure CSS solutions.
+-	4.	Viewport-Based Sizing: Automatically adjust layouts, padding, margins, and font sizes based on the viewport, ensuring fluid scaling across devices.
+
+### Opt-in/Opt-out Responsiveness
+
+By default, Skye components are responsive. If you wish to disable this behavior, simply pass responsive = false when extending SkyeResponsiveComponent.
+
+Example: Opting Out of Responsiveness
+
+```typescript
+class MyComponent extends SkyeResponsiveComponent {
+  constructor() {
+    super({}, false); // Opt out of responsiveness
+  }
+
+  template(): string {
+    return `<p>This component is not responsive by default.</p>`;
+  }
+}
+
+customElements.define('my-component', MyComponent);
+```
+
+## Responsive Utility Components
+
+Skye includes a set of responsive utility components that make it easy to handle layouts, spacing, and other common patterns.
+
+### SkyeGrid
+
+<skye-grid> is a responsive grid container that automatically adjusts the number of columns based on screen size.
+
+Usage:
+
+```html
+<skye-grid>
+  <div class="item">Item 1</div>
+  <div class="item">Item 2</div>
+  <div class="item">Item 3</div>
+</skye-grid>
+```
+
+By default:
+
+	•	Mobile (below 768px): One column
+	•	Tablet (768px - 1024px): Two columns
+	•	Desktop (1024px and above): Three columns
+
+You can extend the grid component to define custom column layouts.
+
+### SkyeSpacing
+
+```html
+<skye-spacing> is a responsive spacing container that adjusts padding based on screen size.
+```
+
+Usage:
+
+´´´html
+<skye-spacing>
+  <p>This content has responsive padding based on the viewport size.</p>
+</skye-spacing>
+```
+
+By default:
+
+	•	Mobile (below 768px): Small padding
+	•	Tablet (768px - 1024px): Medium padding
+	•	Desktop (1024px and above): Large padding
+
+### Extending Utility Components
+
+You can easily extend the utility components to customize their behavior:
+
+Example: Custom SkyeGrid
+
+```typescript
+class CustomGrid extends SkyeGrid {
+  handleResize() {
+    // Custom column layouts
+    const gridContainer = this.querySelector('.grid-container');
+    if (window.innerWidth < 640) {
+      gridContainer.style.gridTemplateColumns = '1fr';
+    } else if (window.innerWidth >= 640 && window.innerWidth < 960) {
+      gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    } else {
+      gridContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    }
+  }
+}
+
+customElements.define('custom-grid', CustomGrid);
+```
+
+### Viewport-Based Sizing and CSS Variables
+
+Skye uses global CSS variables to automatically scale layouts, padding, and font sizes based on the viewport. These variables can be overridden or customized:
+
+```css
+:root {
+  --font-size-sm: calc(1vw + 0.5em);
+  --font-size-md: calc(1.5vw + 0.75em);
+  --font-size-lg: calc(2vw + 1em);
+  
+  --padding-sm: calc(1vw + 5px);
+  --padding-md: calc(1.5vw + 10px);
+  --padding-lg: calc(2vw + 15px);
+  
+  --container-width-sm: 90vw;
+  --container-width-md: 80vw;
+  --container-width-lg: 70vw;
+}
+```
+
+By default, these variables are applied to components like <skye-grid> and <skye-spacing>. You can override them globally or on a per-component basis to customize behavior.
+
+Skye’s hybrid responsiveness system gives you the flexibility to create responsive layouts without needing to manage breakpoints or write custom media queries. Using the provided utility components, you can easily extend and customize responsive behavior using JavaScript, offering more flexibility than traditional CSS utility classes.
+
+## Skye: Functional Components and Web Component Abstraction
+
+Skye introduces a powerful abstraction layer above native web components, enabling developers to define functional components that boil down to web components behind the scenes. This offers a simpler API for defining components while leveraging the power and efficiency of native web components for performance and compatibility.
+
+### Functional Components in Skye
+
+Functional components in Skye allow developers to define their UI declaratively using JavaScript. These components are lightweight and reactive, automatically updating when state changes occur. Under the hood, Skye transforms these functional components into native web components.
+
+### Key Features
+
+- 1.	Declarative UI: Define your UI with simple, functional components that are easy to reason about.
+- 2.	Native Web Components: Skye compiles your functional components into efficient web components for native browser support.
+- 3.	Automatic Reactivity: Skye’s reactivity engine ensures your components update automatically when state changes.
+- 4.	Responsiveness and Accessibility: Skye components are responsive and accessible by default, with easy customization options.
+- 5.	Automatic Cleanup: Skye automatically handles cleanup of effects and state when components are unmounted, so developers don’t need to manage unmounting.
+
+### Defining Functional Components
+
+A functional component in Skye is defined as a simple function that returns a UI structure. Skye automatically handles the lifecycle, rendering, and reactivity of the component.
+
+Example: Simple Functional Component
+
+```typescript
+import { SFC, effect } from 'skye';
+
+function MyComponent() {
+  const state = reactive({ count: 0 });
+
+  effect({
+   doSomething() {
+      console.log('Component mounted or state updated.');
+    }
+  });
+
+  return (
+    <div>
+      <h1>Count: {state.count}</h1>
+      <button onclick={() => state.count++}>Increment</button>
+    </div>
+  );
+} 
+
+export default functionalComponent(MyComponent);
+```
+
+### Key Features:
+
+- Automatic Rendering: The MyComponent functional component will automatically rerender when state.count is updated.
+-	Simplified API: You don’t need to manage the lifecycle or manually handle rendering. Skye handles it behind the scenes.
+- Web Component Integration: This functional component is transformed into a native web component under the hood, ensuring compatibility and performance.
+- Automatic Cleanup: Effects inside the component, such as the effect() hook, are cleaned up automatically when the component is removed from the DOM.
+
+### Functional Components with effect
+
+The effect() function in Skye automatically handles side effects, such as data fetching or event listeners, when the component is mounted or updated. Since Skye automatically cleans up effects, there is no need for an explicit onUnmount.
+
+Example: Fetching Data with effect
+
+```typescript
+import { SFC, effect } from 'skye';
+
+function FetchDataComponent() {
+  const state = reactive({ data: null });
+
+  effect.obtain({
+    getData() {
+      fetch('/api/data')
+      .then(response => response.json())
+      .then(data => state.data = data);
+    // Cleanup (like removing listeners or aborting requests) happens automatically when the component is removed
+    }
+  });
+
+  return (
+    <div>
+      {state.data ? (
+        <p>Data: {state.data}</p>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  );
+}
+
+export default functionalComponent(FetchDataComponent);
+```
+
+effect Hook:
+
+	•	Runs on Mount: Automatically handles side effects when the component is first rendered or when the state changes.
+	•	Automatic Cleanup: Cleanup for effects is managed by Skye, so developers don’t need to manually handle it.
+
+### Responsive and Accessible Functional Components
+
+As with all Skye components, functional components are responsive and accessible by default. You can opt out of or extend the default behavior as needed.
+
+Example: Responsive Functional Component
+
+```typescript
+import { functionalComponent } from 'skye';
+
+function ResponsiveComponent() {
+  return (
+    <div class="responsive-container">
+      <p>This component is responsive by default.</p>
+    </div>
+  );
+}
+
+export default functionalComponent(ResponsiveComponent);
+```
+
+In this example, the component will adjust its layout based on the screen size, utilizing the hybrid responsiveness solution provided by Skye.
+
+### Skye Utility Components: Extending Functional Components
+
+Skye also provides a set of utility components that can be used inside templates or functional components to handle common responsive and layout patterns. These components can be extended and customized using JavaScript, allowing developers to tailor them to their needs.
+
+Example: SkyeGrid in a Functional Component
+
+```typescript
+import { functionalComponent } from 'skye';
+import { SkyeGrid } from './components/utilities/SkyeGrid';
+
+function CardLayout() {
+  return (
+    <SkyeGrid>
+      <div class="card">Card 1</div>
+      <div class="card">Card 2</div>
+      <div class="card">Card 3</div>
+    </SkyeGrid>
+  );
+}
+
+export default functionalComponent(CardLayout);
+```
+Here, the SkyeGrid utility component is used inside a functional component to provide a responsive grid layout.
+
+### Extending Utility Components
+
+Developers can extend and customize Skye’s utility components. This makes it easy to reuse and adapt components like grids, spacing containers, and more, all while benefiting from Skye’s responsiveness and reactivity.
+
+Example: Extending a Utility Component
+
+```typescript
+import { SkyeGrid } from './components/utilities/SkyeGrid';
+
+class CustomGrid extends SkyeGrid {
+  handleResize() {
+    const gridContainer = this.querySelector('.grid-container');
+    if (window.innerWidth < 640) {
+      gridContainer.style.gridTemplateColumns = '1fr';
+    } else if (window.innerWidth >= 640 && window.innerWidth < 960) {
+      gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    } else {
+      gridContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    }
+  }
+}
+
+customElements.define('custom-grid', CustomGrid);
+```
+
+
+## Rendering Engine with Caching, Reactivity, and Optimizations
+
+### Template Caching and Hashing
+
+In Skye, templates are cached to prevent unnecessary re-rendering, improving overall performance. We use a fast hashing algorithm (BLAKE3) to compare the current template with the cached version.
+
+How It Works:
+
+- 1.	Template Hashing: Each template is hashed using BLAKE3 before rendering.
+- 2.	Cache Check: Before rendering, Skye checks if the current template’s hash matches the cached hash. If the template hasn’t changed, it skips re-rendering.
+- 3.	Cache Update: If the template has changed, Skye updates the cache with the new hash and renders the template.
+
+Example:
+
+```typescript
+async function hashTemplate(template: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(template);
+  const res = await crypto.subtle.digest("BLAKE3", data);
+  return byteArrayToHexString(res);
+}
+
+const templateCache = new Map<string, { hash: string, renderFunction: Function }>();
+
+export async function renderTemplate(template: string, state: Record<string, any>, element: HTMLElement) {
+  const templateHash = await hashTemplate(template);
+
+  const cachedTemplate = templateCache.get(template);
+  if (cachedTemplate && cachedTemplate.hash === templateHash) {
+    // Skip re-rendering if the template hasn’t changed
+    return;
+  }
+
+  // Parse the template and update the cache
+  const tokens = parseTemplate(template);
+  const templateFunction = new Function(...Object.keys(state), `return \`${tokens.join('')}\`;`);
+  templateCache.set(template, { hash: templateHash, renderFunction: templateFunction });
+
+  const renderContent = templateFunction(...Object.values(state));
+  element.innerHTML = renderContent;
+
+  // Fine-grained reactivity ensures minimal DOM updates
+  effect({
+    update() {
+      const updatedContent = templateFunction(...Object.values(state));
+      if (element.innerHTML !== updatedContent) {
+        element.innerHTML = updatedContent;
+      }
+    }
+  });
+}
+```
+
+### Fine-Grained Reactivity
+
+Skye’s reactivity system ensures that only the parts of the DOM affected by state changes are updated, minimizing unnecessary DOM manipulations.
+
+How It Works:
+
+-	Each dynamic expression within the template is tracked and updated only when its corresponding state changes.
+-	This approach ensures fine-grained updates to the DOM, significantly boosting performance in large or frequently updated components.
+
+Example:
+
+```typescript
+const dependencies = new Map<string, Function>();
+
+function renderTemplateWithReactivity(template: string, state: Record<string, any>, element: HTMLElement) {
+  const tokens = parseTemplate(template);
+
+  tokens.forEach((token, index) => {
+    if (token.startsWith('{{') && token.endsWith('}}')) {
+      const expression = token.slice(2, -2).trim();
+      dependencies.set(expression, () => {
+        const result = new Function(...Object.keys(state), `return ${expression};`)(...Object.values(state));
+        if (element.children[index]) {
+          element.children[index].textContent = result;
+        }
+      });
+    }
+  });
+
+  tokens.forEach((token, index) => {
+    if (!token.startsWith('{{')) {
+      if (element.children[index]) {
+        element.children[index].textContent = token;
+      }
+    } else {
+      dependencies.get(token.slice(2, -2).trim())?.();
+    }
+  });
+
+  effect({
+    update: () => {
+      dependencies.forEach(fn => fn());
+    }
+  });
+}
+```
+
+### Performance Optimizations
+
+In addition to caching and reactivity, Skye introduces several other performance optimizations:
+
+	1.	Memoized Expressions: Skye caches the results of expensive expressions, reducing redundant computations.
+	2.	Debounced or Batched State Updates: Skye can group multiple state changes together, preventing frequent, costly re-renders during rapid state changes.
 
 # Skye Server
 
@@ -410,8 +825,6 @@ server.use(createReactiveMiddleware());
 ```
 
 This reactive state can be accessed and modified in your route handlers or other middleware.
-
-## Conclusion
 
 The Skye Server provides a powerful and flexible foundation for building modern web applications. By leveraging its advanced features like middleware, routing, and server-side reactivity, you can create scalable and efficient server-side applications that integrate seamlessly with the Skye framework.
 

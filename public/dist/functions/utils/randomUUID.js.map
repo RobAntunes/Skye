@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/client/functions/utils/randomUUID.ts"],
+  "sourcesContent": ["export function randomUUID() {\n  if (typeof crypto !== 'undefined' && crypto.randomUUID) {\n    return crypto.randomUUID();\n  }\n}"],
+  "mappings": ";AAAO,SAAS,aAAa;AAC3B,MAAI,OAAO,WAAW,eAAe,OAAO,YAAY;AACtD,WAAO,OAAO,WAAW;AAAA,EAC3B;AACF;",
+  "names": []
+}

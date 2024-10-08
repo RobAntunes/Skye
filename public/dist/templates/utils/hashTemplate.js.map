@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/client/templates/utils/hashTemplate.ts"],
+  "sourcesContent": ["export async function hashTemplate(template: string): Promise<string> {\n  const response = await fetch(\"http://localhost:8000/api/hash\", {\n    method: \"POST\",\n    headers: {\n      \"Content-Type\": \"application/json\",\n    },\n    body: JSON.stringify({ template }),\n  });\n\n  const res = await response.json();\n\n  if (response.ok) {\n    return res.data;\n  } else {\n    throw new Error(`Hashing failed: ${res.error}`);\n  }\n}"],
+  "mappings": ";AAAA,eAAsB,aAAa,UAAmC;AACpE,QAAM,WAAW,MAAM,MAAM,kCAAkC;AAAA,IAC7D,QAAQ;AAAA,IACR,SAAS;AAAA,MACP,gBAAgB;AAAA,IAClB;AAAA,IACA,MAAM,KAAK,UAAU,EAAE,SAAS,CAAC;AAAA,EACnC,CAAC;AAED,QAAM,MAAM,MAAM,SAAS,KAAK;AAEhC,MAAI,SAAS,IAAI;AACf,WAAO,IAAI;AAAA,EACb,OAAO;AACL,UAAM,IAAI,MAAM,mBAAmB,IAAI,KAAK,EAAE;AAAA,EAChD;AACF;",
+  "names": []
+}

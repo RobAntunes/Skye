@@ -1,19 +1,19 @@
-import { effect } from "../../reactivity/reactive.ts";
+import { WorkerPool } from "../../classes/WorkerPool.ts";
 
 type ObtainOptions = {
   cache?: boolean; // Use cached data if available
   paginate?: boolean; // Handle pagination if required
   maxCacheAge?: number; // Time in milliseconds before cache is invalidated
   retries?: number; // Number of retries if an operation fails
-  parallel?: boolean; // Run the operation in parallel using worker pool
-  maxWorkers?: number; // Max workers for parallel processing
+  parallel?: boolean; // Run the operation in parallel using a worker pool
+  maxWorkers?: number; // Maximum number of workers for parallel processing
   batch?: boolean; // Batch async operations if needed
 };
 
-function obtain<T>(
-  asyncOperation: () => Promise<T>,
+export function obtain<T>(
+  asyncOperation: () => Promise<T>, // Each async operation returns a promise
   options: ObtainOptions = {}
-): Promise<T> {
+): Promise<T[]> {
   const {
     cache = true,
     paginate = false,
@@ -24,7 +24,7 @@ function obtain<T>(
     batch = false,
   } = options;
 
-  let cacheData: { result: Promise<T>; timestamp: number } | null = null;
+  let cacheData: { result: Promise<T[]>; timestamp: number } | null = null;
 
   return new Promise((resolve, reject) => {
     try {
@@ -36,17 +36,33 @@ function obtain<T>(
         }
       }
 
-      let result: Promise<T>;
+      let result: Promise<T[]>;
 
       if (parallel) {
-        // Run the async operation in parallel using a worker pool
         const workerPool = new WorkerPool(maxWorkers);
-        result = new Promise((res, rej) => {
-          workerPool.submitTask(asyncOperation);
+        result = new Promise((resolve, reject) => {
+          if (batch) {
+            const taskPromises = [asyncOperation, asyncOperation].map(async (task) => {
+              const resolvedResult = await task();
+              return workerPool.submitTask({ result: resolvedResult, delay: 100 });
+            });
+
+            Promise.all(taskPromises)
+              .then((resolvedTasks) => resolve(resolvedTasks as T[]))
+              .catch(reject);
+          } else {
+            asyncOperation().then(resolvedResult => {
+              workerPool.submitTask({ result: resolvedResult, delay: 100 })
+                .then((result) => resolve([result])) // Unwrap the resolved result
+                .catch(reject);
+            });
+          }
         });
       } else {
-        // Run the operation with retry logic
-        result = retryOperation(asyncOperation, retries);
+        // Non-parallel execution with retry logic
+        result = batch
+          ? Promise.all([retryOperation(asyncOperation, retries)]).then((res) => res as T[])
+          : retryOperation(asyncOperation, retries).then((result) => [result]);
       }
 
       if (cache) {
@@ -54,7 +70,7 @@ function obtain<T>(
       }
 
       if (paginate) {
-        // Handle pagination logic here
+        // Handle pagination logic here if needed
       }
 
       resolve(result);
@@ -71,12 +87,17 @@ async function retryOperation<T>(
   let lastError;
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
+      // Attempt the operation
       return await operation();
     } catch (error) {
       lastError = error;
+      console.warn(`Attempt ${attempt + 1} failed. Retrying...`);
+
+      // If all retries are exhausted, throw the last encountered error
+      if (attempt === retries - 1) {
+        throw lastError;
+      }
     }
   }
-  throw lastError;
+  throw lastError; // In case the loop completes without a successful operation
 }
-
-effect.obtain = obtain;

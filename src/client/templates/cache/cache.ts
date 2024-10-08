@@ -1,0 +1,1 @@
+export const templateCache = new Map<string, Function>();

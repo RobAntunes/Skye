@@ -1,81 +1,55 @@
-import { reactive, effect } from "../../reactivity/reactive.ts";
+import { effect, reactive } from "../../reactivity/reactive.ts";
+import { parseTemplateString } from "../../templates/engine.ts";
 
 export class SkyeComponent extends HTMLElement {
   state: any;
-  cleanupFn?: () => void;
+  private cleanupTasks: Array<() => void> = [];
 
-  constructor(initialState = {}) {  
+  constructor() {
     super();
-    this.state = reactive(initialState);
+    this.state = reactive({});
   }
 
-  connectedCallback() {
-    const outerRender = this.render.bind(this);
-    
-    // Start the initial render
-    outerRender();
+  connectedCallback(): void {
+    // Set up the reactive effect and get the cleanup function
+    const cleanupRenderEffect = effect(() => this.render());
 
-    // Setup reactive effect for re-rendering on state changes
-    effect({
-      render() {
-        outerRender();
-      }
-    });
+    // Automatically clean up the effect on disconnect
+    this.addCleanupTask(cleanupRenderEffect);
   }
 
-  disconnectedCallback() {
-    // Handle cleanup or memory management if needed
-    if (this.cleanupFn) {
-      this.cleanupFn();
-    }
+  disconnectedCallback(): void {
+    // Execute all cleanup tasks
+    this.cleanupTasks.forEach((cleanup) => cleanup());
+    this.cleanupTasks = [];
   }
 
-  beforeRender() {
-    // Hook for actions before rendering
-  }
-  
-  afterRender() {
-    // Hook for actions after rendering
-  }
-
-  batchStateUpdates(fn: () => void) {
-    // Temporarily disable reactivity and batch multiple state updates
-    this.suspendReactivity();
-  
-    // Perform all state updates within this block
-    fn();
-  
-    // Re-enable reactivity and trigger a single re-render
-    this.resumeReactivity();
-    this.render(); // Optionally trigger a re-render
+  render(): void {
+    const template = this.template();
+    const fragment = parseTemplateString(template);
+    this.innerHTML = '';
+    this.appendChild(fragment);
   }
 
-  onSuspend() {
-    // Hook for when the component's functions or effects are suspended
-  }
-  
-  onResume() {
-    // Hook for when the component resumes from a suspended state
+  template(): string {
+    // To be overridden by subclasses
+    return '';
   }
 
-  render() {
-    // Clear previous render
-    this.innerHTML = "";
-
-    // Create and append the new template
-    const template = this.renderTemplate();
-    if (template) {
-      this.appendChild(template);
-    }
+  // Helper method to add a cleanup task
+  protected addCleanupTask(task: () => void): void {
+    this.cleanupTasks.push(task);
   }
 
-  // User-defined function for cleanup
-  onCleanup(fn: () => void) {
-    this.cleanupFn = fn;
-  }
-
-  // Override this to provide a custom template
-  renderTemplate(): DocumentFragment | null {
-    return document.createDocumentFragment();
+  // Helper method to add event listeners with automatic cleanup
+  protected addEventListenerWithCleanup<K extends keyof HTMLElementEventMap>(
+    type: K,
+    listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any,
+    options?: boolean | AddEventListenerOptions
+  ): void {
+    this.addEventListener(type, listener, options);
+    this.addCleanupTask(() => this.removeEventListener(type, listener, options));
   }
 }
+
+export type Constructor<T = {}> = new (...args: any[]) => T;

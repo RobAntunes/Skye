@@ -1,7 +1,7 @@
 import type { Context, Middleware } from "../index.ts";
 
 const mimeTypes: Record<string, string> = {
-  ".ts": "application/typescript",  // Correct MIME type for TypeScript
+  ".ts": "application/javascript",
   ".js": "application/javascript",
   ".jsx": "application/javascript",
   ".tsx": "application/javascript",
@@ -21,22 +21,23 @@ const mimeTypes: Record<string, string> = {
   ".otf": "application/font-otf",
   ".wasm": "application/wasm",
 };
- 
+
 export const setMIMEType: Middleware = async (
   ctx: Context,
   next: () => Promise<void>
 ) => {
   const url = new URL(ctx.request.url);
   const pathParts = url.pathname.split(".");
+
+  // Debugging to ensure correct parsing
+
   const extension = pathParts.length > 1 ? `.${pathParts.pop()}` : "";
 
-  // Handle the case where there is no extension (e.g., '/')
-  const mimeType = mimeTypes[extension] || 
-                   (url.pathname === '/' ? 'text/html' : 'application/octet-stream'); 
+  const mimeType =
+    mimeTypes[extension] ||
+    (url.pathname === "/" ? "text/html" : "application/octet-stream");
 
   ctx.response.headers.set("Content-Type", mimeType);
-
-  console.log(`Setting MIME type for ${url.pathname}: ${mimeType}`);
 
   await next();
 };

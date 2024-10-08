@@ -29,4 +29,4 @@ Here’s a breakdown of what we can do next:
 	•	Start with the basic component system, register a web component, and ensure it can rerender in isolation.
 	•	Then integrate the reactive engine into each component.
 
-Does that sound good as the immediate roadmap? I’ll start by focusing on the web component registration and template parser, ensuring we stay true to the ideas we’ve outlined.
+Stop transpiling on the fly for prod.

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/client/templates/cache/cache.ts"],
+  "sourcesContent": ["export const templateCache = new Map<string, Function>();"],
+  "mappings": ";AAAO,IAAM,gBAAgB,oBAAI,IAAsB;",
+  "names": []
+}

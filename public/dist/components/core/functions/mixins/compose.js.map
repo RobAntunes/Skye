@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../../../src/client/components/core/functions/mixins/compose.ts"],
+  "sourcesContent": ["// src/mixins/composeMixins.ts\n\nexport function composeMixins<T extends new (...args: any[]) => any>(\n    Base: T,\n    ...mixins: ((Base: T) => T)[]\n  ): T {\n    return mixins.reduce((accumulator, mixin) => mixin(accumulator), Base);\n  }"],
+  "mappings": ";AAEO,SAAS,cACZ,SACG,QACA;AACH,SAAO,OAAO,OAAO,CAAC,aAAa,UAAU,MAAM,WAAW,GAAG,IAAI;AACvE;",
+  "names": []
+}

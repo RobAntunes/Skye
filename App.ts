@@ -2,13 +2,10 @@ import { SkyeComponent } from './src/client/components/core/SkyeComponent.ts';
 
 export class App extends SkyeComponent {
   constructor() {
-    super({
-      count: 0,
-      message: 'Welcome to Skye.js!'
-    });
+    super();
   }
 
-  override renderTemplate() {
+  renderTemplate() {
     const template = document.createDocumentFragment();
     const appDiv = document.createElement('div');
     appDiv.innerHTML = `

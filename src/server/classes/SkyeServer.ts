@@ -39,19 +39,34 @@ export class SkyeServer {
         params: {},
         query: this.parseQuery(url.searchParams),
         body: undefined,
+        original: req
       },
       response: {
         status: 200,
-        body: null,
+        body: {},
         headers: new Headers(),
       },
       state: {},
     };
-
+  
     try {
+      // Read and parse the request body
+      if (req.method === "POST" || req.method === "PUT") {
+        const contentType = req.headers.get("Content-Type") || "";
+        if (contentType.includes("application/json")) {
+          ctx.request.body = await req.json();
+        } else if (contentType.includes("text/")) {
+          ctx.request.body = await req.text();
+        } else if (contentType.includes("application/octet-stream")) {
+          ctx.request.body = await req.arrayBuffer();
+        } else {
+          ctx.request.body = await req.text();
+        }
+      }
+  
       // Run global middlewares
       await this.runMiddleware(ctx, this.middlewares);
-
+  
       // Route matching
       const match = this.router.match(req.method, url.pathname);
       if (match) {
@@ -66,12 +81,24 @@ export class SkyeServer {
       ctx.response.status = 500;
       ctx.response.body = { error: "Internal Server Error" };
     }
-
-    return new Response(ctx.response.body, {
+  
+    // Ensure the response body is properly serialized
+    const responseBody =
+      typeof ctx.response.body === "string" || ctx.response.body instanceof Uint8Array
+        ? ctx.response.body
+        : JSON.stringify(ctx.response.body);
+  
+    // Ensure Content-Type header is set
+    if (!ctx.response.headers.has("Content-Type")) {
+      ctx.response.headers.set("Content-Type", "application/json");
+    }
+  
+    return new Response(responseBody, {
       status: ctx.response.status,
       headers: ctx.response.headers,
     });
   }
+
   private parseQuery(searchParams: URLSearchParams): Record<string, string> {
     const result: Record<string, string> = {};
     const paramString = searchParams.toString();

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../../src/client/functions/utils/deepClone.ts"],
+  "sourcesContent": ["export function deepClone(obj: any): any {\n    if (typeof obj !== 'object' || obj === null) {\n      return obj; // Return primitives and null as is\n    }\n  \n    // Handle arrays\n    if (Array.isArray(obj)) {\n      const newArr = [];\n      for (let i = 0; i < obj.length; i++) {\n        newArr[i] = deepClone(obj[i]); // Recursively clone array elements\n      }\n      return newArr;\n    }\n  \n    // Handle objects\n    const newObj: any = {};\n    for (const key in obj) {\n      if (Object.prototype.hasOwnProperty.call(obj, key)) {\n        newObj[key] = deepClone(obj[key]); // Recursively clone properties\n      }\n    }\n    return newObj;\n  }"],
+  "mappings": ";AAAO,SAAS,UAAU,KAAe;AACrC,MAAI,OAAO,QAAQ,YAAY,QAAQ,MAAM;AAC3C,WAAO;AAAA,EACT;AAGA,MAAI,MAAM,QAAQ,GAAG,GAAG;AACtB,UAAM,SAAS,CAAC;AAChB,aAAS,IAAI,GAAG,IAAI,IAAI,QAAQ,KAAK;AACnC,aAAO,CAAC,IAAI,UAAU,IAAI,CAAC,CAAC;AAAA,IAC9B;AACA,WAAO;AAAA,EACT;AAGA,QAAM,SAAc,CAAC;AACrB,aAAW,OAAO,KAAK;AACrB,QAAI,OAAO,UAAU,eAAe,KAAK,KAAK,GAAG,GAAG;AAClD,aAAO,GAAG,IAAI,UAAU,IAAI,GAAG,CAAC;AAAA,IAClC;AAAA,EACF;AACA,SAAO;AACT;",
+  "names": []
+}

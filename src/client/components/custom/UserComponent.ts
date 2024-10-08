@@ -2,14 +2,7 @@ import { SkyeComponent } from "../core/SkyeComponent.ts";
 
 export class UserComponent extends SkyeComponent {
   constructor() {
-    super({
-      user: {
-        id: "",
-        name: "Loading...",
-        email: "",
-      },
-      isEditing: false,
-    });
+    super();
 
     // Fetch user data when component is created
     this.fetchUserData();
@@ -32,11 +25,10 @@ export class UserComponent extends SkyeComponent {
 
   updateUser() {
     // In a real app, you'd send this update to the server
-    console.log("Updating user:", this.state.user);
     this.state.isEditing = false;
   }
 
-  override renderTemplate() {
+  renderTemplate() {
     const template = document.createDocumentFragment();
     const userDiv = document.createElement("div");
 

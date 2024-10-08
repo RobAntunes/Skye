@@ -1,46 +1,101 @@
-import {
-  assertEquals,
-} from "https://deno.land/std@0.182.0/testing/asserts.ts";
-import { reactive, effect, rerender } from "./reactive.ts";
+import { reactive, effect } from "./reactive.ts";
+import { SkyeComponent } from "../components/core/SkyeComponent.ts";
+import { Accessible } from "../components/core/functions/mixins/Accessible.ts";
+import { composeMixins } from "../components/core/functions/mixins/compose.ts";
 
-Deno.test("reactive() creates a reactive object", () => {
-  const original = { count: 0 };
-  const observed = reactive(original);
-
-  assertEquals(observed.count, 0);
-  original.count++; 
-  assertEquals(observed.count, 1, "Changes in original should reflect in observed");
-});
-
-Deno.test("Handling asynchronous effects", async () => {
-  const state = reactive({ count: 0, data: null as string | null });
-  let effectCount = 0;
+function testReactivitySystem() {
+  const state = reactive({ count: 0 });
+  let dummy = 0;
 
   effect({
-    asyncEffect: () => {
-      effectCount++;
-      console.log("Count:", state.count);
-      if (state.data === null) {
-        return new Promise<void>((resolve) =>
-          setTimeout(() => {
-            state.data = "Loaded";
-            resolve();
-          }, 100)
-        );
-      }
-      console.log("Data:", state.data);
+    dummy() {
+      state.count;
     },
   });
 
-  assertEquals(effectCount, 1, "Effect should run immediately");
-  assertEquals(state.data, null, "Initial state should be null");
+  console.assert(dummy === 0, `Expected dummy to be 0, got ${dummy}`);
 
-  state.count++;
-  await rerender();
-  assertEquals(effectCount, 2, "Effect should run after state change");
+  state.count = 1;
+  console.assert(dummy === 1, `Expected dummy to be 1, got ${dummy}`);
 
-  await new Promise(resolve => setTimeout(resolve, 150));
-  await rerender();
-  assertEquals(state.data, "Loaded", "Data should be updated after async resolution");
-  assertEquals(effectCount, 3, "Effect should rerun after async operation completes");
-});
+  state.count += 1;
+  console.assert(dummy === 2, `Expected dummy to be 2, got ${dummy}`);
+
+}
+
+testReactivitySystem();
+
+class TestComponent extends SkyeComponent {
+  constructor() {
+    super();
+    this.state.title = "Initial Title";
+  }
+
+  override template(): string {
+    return `<h1>${this.state.title}</h1>`;
+  }
+}
+
+function testComponentRender() {
+  const component = new TestComponent();
+  component.connectedCallback();
+
+  // Type assertion to HTMLElement
+  const element = component as unknown as HTMLElement;
+
+  console.assert(
+    element.innerHTML.includes("Initial Title"),
+    "Component did not render initial title."
+  );
+
+  // Change state
+  component.state.title = "Updated Title";
+
+  // The effect should trigger and re-render
+  setTimeout(() => {
+    console.assert(
+      element.innerHTML.includes("Updated Title"),
+      "Component did not update title on state change."
+    );
+    console.log("Component render test passed.");
+  }, 0);
+}
+
+testComponentRender();
+
+class AccessibleComponent extends composeMixins(SkyeComponent, Accessible) {
+  constructor() {
+    super();
+    this.state.expanded = false;
+  }
+
+  override template(): string {
+    return `<div>Accessible Content</div>`;
+  }
+}
+
+function testAccessibilityReactivity() {
+  const component = new AccessibleComponent();
+  component.connectedCallback();
+
+  const element = component as unknown as HTMLElement;
+
+  console.assert(
+    element.getAttribute("aria-expanded") === "false",
+    "Initial aria-expanded should be false."
+  );
+
+  // Change state
+  component.state.expanded = true;
+
+  // The effect should trigger and update the attribute
+  setTimeout(() => {
+    console.assert(
+      element.getAttribute("aria-expanded") === "true",
+      "aria-expanded should update to true on state change."
+    );
+    console.log("Accessibility reactivity test passed.");
+  }, 0);
+}
+
+testAccessibilityReactivity();

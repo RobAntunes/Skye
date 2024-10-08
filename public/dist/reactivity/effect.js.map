@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/client/reactivity/effect.ts"],
+  "sourcesContent": ["const suspendedEffects: Function[] = [];\n\nexport function effect(fn: Function) {\n  const iterator = effectGenerator(fn);\n  function run() {\n    const result = iterator.next();\n    if (!result.done) {\n      // Effect is suspended, store for later\n      suspendedEffects.push(run);\n    }\n  }\n  run();\n}\n\n// When state changes, resume effects\nexport function triggerEffects() {\n  const effectsToRun = [...suspendedEffects];\n  suspendedEffects.length = 0;\n  effectsToRun.forEach(effectFn => effectFn());\n}\n\n"],
+  "mappings": ";AAAA,IAAM,mBAA+B,CAAC;AAE/B,SAAS,OAAO,IAAc;AACnC,QAAM,WAAW,gBAAgB,EAAE;AACnC,WAAS,MAAM;AACb,UAAM,SAAS,SAAS,KAAK;AAC7B,QAAI,CAAC,OAAO,MAAM;AAEhB,uBAAiB,KAAK,GAAG;AAAA,IAC3B;AAAA,EACF;AACA,MAAI;AACN;AAGO,SAAS,iBAAiB;AAC/B,QAAM,eAAe,CAAC,GAAG,gBAAgB;AACzC,mBAAiB,SAAS;AAC1B,eAAa,QAAQ,cAAY,SAAS,CAAC;AAC7C;",
+  "names": []
+}
