@@ -658,7 +658,7 @@ Skye's templating engine allows you to create dynamic HTML templates with embedd
 Skye uses tagged template literals to process and render templates. You can execute arbitrary JavaScript functions within your templates by using the skye tag.
 
 Example:
-
+```ts
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -678,6 +678,7 @@ Example:
     <script src="/public/app.js"></script>
   </body>
 </html>
+```
 
 Explanation:
 
@@ -692,20 +693,16 @@ Explanation:
 Skye allows embedding and executing arbitrary JavaScript within your templates, providing full flexibility to manipulate data, perform computations, or interact with external APIs directly within your HTML.
 
 Example:
-```typescript
+```ts
 <p>{{ skye`${() => { 
   console.log("Executing complex logic");
   const greeting = "Hello, Skye!";
   return greeting;
 }` }}</p>
 ```
-Rendered Output:
-
-<p>Hello, Skye!</p>
-
-Server Console Output:
-
-Executing complex logic
+Rendered Output: <p>Hello, Skye!</p>
+```
+Server Console Output: Executing complex logic
 
 ### Responsive Utility Components
 
@@ -1278,7 +1275,6 @@ effects.observables.emit(searchObservable, 'Apple');
 // Output after 300ms:
 // Search Query: Apple
 ```
-
 ## State
 
 ### Introduction
@@ -1297,8 +1293,6 @@ The State class provides a centralized, reactive state management system with th
 	•	Centralized State Store: Manage application state on the server for enhanced security and persistence.
 	•	Namespacing: Organized method namespaces for clarity and to prevent naming collisions.
 	•	Minimal Boilerplate: Simple and intuitive API reduces development overhead.
-
-
 
 ### Architecture Overview
 
@@ -1347,7 +1341,6 @@ Skye’s State Management system automatically persists state changes to the sel
 
 Middleware functions enable you to intercept and process state mutations for purposes like authentication, validation, and logging.
 
-
 ### API Reference
 
 #### StateManager
@@ -1382,7 +1375,6 @@ const unsubscribe = stateManager.subscribe('user', (newUser) => {
 // To unsubscribe
 unsubscribe();
 ```
-
 
 #### StateStore
 
