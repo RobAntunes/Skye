@@ -1,6 +1,6 @@
 // tests/templateRenderer.test.ts
 
-import { hashTemplate, renderTemplate } from "../templates/render.ts";
+import { hashTemplate, renderTemplate } from "../../templates/render.ts";
 import { assertEquals } from "jsr:@std/assert";
 
 Deno.test("hashTemplate returns consistent hashes", async () => {

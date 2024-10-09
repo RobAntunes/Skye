@@ -1,6 +1,6 @@
 import { assertEquals } from "jsr:@std/assert";
-import { renderTemplate } from "../templates/render.ts"; // Adjust the import path
-import { reactive } from "../services/reactive.ts";
+import { renderTemplate } from "../../templates/render.ts"; // Adjust the import path
+import { reactive } from "../../services/reactive.ts";
 
 Deno.test("Server-side template rendering with reactivity", async () => {
   const data = reactive({ title: "Test Title", count: 1 });

@@ -7,7 +7,12 @@
   </head>
   <body>
     <h1>{{ title }}</h1>
-    <p>You have visited this page {{ count }} times.</p>
+    <p>You have visited this page {{ 5 }} times.</p>
+    <p>{{ skye`${() => { 
+      console.log("This is arbitrary JavaScript inside a template"); 
+      return "This text is returned from the skye function";
+    }}` }}</p>
+    <p>{{ skye`Current time: ${new Date().toLocaleTimeString()}` }}</p>
     <script src="/public/app.js"></script>
   </body>
 </html>
