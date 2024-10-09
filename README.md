@@ -1,6 +1,6 @@
 # Skye: A Modern Full-Stack JavaScript Framework
 
-Skye is a cutting-edge full-stack JavaScript framework designed for building high-performance, scalable web applications. It emphasizes developer experience, ease of use, and performance, enabling developers to create dynamic and responsive applications efficiently. Skye aims to be the batteries included default for the JavaScript ecosystem allowing any sole seasoned developer to create prdocuction ready apps, leveling the playing field while raising the bar.
+Skye is a cutting-edge full-stack JavaScript framework designed for building high-performance, scalable web applications. It emphasizes developer experience, ease of use, performance, and elegance, enabling developers to create dynamic and responsive applications efficiently. Skye aims to be the batteries included default for the JavaScript/TypeScript ecosystem allowing any seasoned sole developer to create production ready apps, leveling the playing field while raising the bar.
 
 Table of Contents
 
@@ -31,28 +31,9 @@ Table of Contents
 	  -	Template Caching and Hashing
 	  -	Fine-Grained Reactivity
 	  -	Worker Pool for Parallel Processing
-
-## Key Features
-
--	AI-Powered Automated Testing: Eliminate manual testing with AI-generated test cases. Skye analyzes your components and state interactions to create comprehensive tests, saving you time and effort. (Accessible via a paid API or by integrating with other AI testing providers.)
-	
--	WASM-First, Component-Based Reactivity: Experience blazing-fast performance with a WASM-powered reactivity engine. Components update independently in response to state changes, eliminating the need for a virtual DOM and reducing unnecessary re-renders.
-	
--	Two-Way Data Binding: Simplify state management with intuitive two-way data binding. Components directly reflect changes in the underlying data, making your code cleaner and easier to reason about.
-	
--	Modular Architecture: Skye is highly modular, allowing you to use only the features you need. Choose from a variety of modules for routing, API integration, server-side rendering, and more.
-	
--	Simple Reactivity: Enjoy a simple and elegant reactivity system. Reassign state values directly without the need for complex setter functions.
-	
--	Separation of Concerns: Write maintainable code with a clear separation of concerns. Skye provides tooling to easily navigate between component logic, styles, and templates.
-	
--	Custom Templating Language: Leverage a custom templating language designed to seamlessly integrate with Skye’s reactivity system.
-	
--	TypeScript First: Benefit from type safety and improved code readability with TypeScript.
-	
--	Full-Stack Capabilities: Build complete web applications with server-side rendering (SSR) and API integration modules.
-	
--	Arbitrary JavaScript Execution in Templates: Use the powerful skye templating engine to execute arbitrary JavaScript functions within your HTML templates.
+    	------------------
+    	TODO: Finish ToC
+	------------------
 
 ## Getting Started
 
@@ -904,7 +885,7 @@ Example: Responsive Functional Component
 -	Accessibility: Built-in accessibility features ensure components are usable by all users.
 -	Customization: Easily extend or override default behaviors using JavaScript.
 
-### kye Utility Components: Extending Single File Components
+### Skye Utility Components: Extending Single File Components
 
 Skye provides a set of utility components that can be used inside templates or functional components to handle common responsive and layout patterns.
 
