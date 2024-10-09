@@ -1,8 +1,8 @@
-import { reactive } from "../../client/reactivity/reactive.ts";
+import { reactive } from "../core/base/reactivity/Effects.ts";
 import type { Context, Middleware } from "../server.ts";
 
 // Server-side reactivity
-export const createReactiveMiddleware = () => {
+export const createReactiveMiddleware =  async () => {
     const state = reactive({
       // Your reactive state here
       connections: 0,

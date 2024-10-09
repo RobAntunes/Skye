@@ -6,7 +6,7 @@ import { contentTypeMiddleware } from "./middleware/contentType.ts";
 import { jsonParser } from "./middleware/jsonParser.ts";
 import { corsMiddleware } from "./middleware/cors.ts";
 import { join } from "https://deno.land/std@0.203.0/path/mod.ts";
-import { reactive } from "./services/reactive.ts";
+import { Effects } from "./core/base/reactivity/Effects.ts";
 // @ts-ignore
 import { routes } from "../server/data/mappings.ts";
 export type Middleware = (
@@ -33,6 +33,7 @@ export interface Context {
 }
 
 const skyeServer = new SkyeServer();
+const effect = new Effects()
 
 // Middleware
 skyeServer.use(loggerMiddleware);
@@ -74,7 +75,7 @@ function getContentType(ext: string | undefined): string {
 }
 
 skyeServer.route("GET", "/welcome", async (ctx: Context) => {
-  const data = reactive({
+  const data = effect.reactive({
     title: "Welcome to Skye Framework",
     user: { isLoggedIn: true, name: "Alice" },
   });

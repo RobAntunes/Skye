@@ -27,7 +27,7 @@ export function skye(
   return result; // Return the final result
 }
 
-function sanitize(input: unknown): string {
+export function sanitize(input: unknown): string {
   if (typeof input !== "string") {
     input = String(input);
   }
@@ -43,7 +43,7 @@ function sanitize(input: unknown): string {
   });
 }
 
-function preprocessTemplate(template: string): string {
+export function preprocessTemplate(template: string): string {
   // Step 1: Handle skye function calls
   const skyeExprRegex = /{{\s*skye`([\s\S]+?)`\s*}}/g;
   let processedTemplate = template.replace(skyeExprRegex, (_, code) => {
@@ -62,7 +62,7 @@ function preprocessTemplate(template: string): string {
   return processedTemplate;
 }
 
-function createTemplateFunction(
+export function createTemplateFunction(
   templateString: string
 ): (context: Record<string, any>) => string {
   return (context: Record<string, any>) => {

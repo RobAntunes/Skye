@@ -76,15 +76,9 @@ const state = reactive<{ count: number, name: string }>({
 
 effect({
   log() {
-<<<<<<< HEAD
     console.log("Count:", state.count);
     console.log("Name:", state.name);
   }
-=======
-        console.log("Count:", state.count);
-        console.log("Name:", state.name);
-    }
->>>>>>> 5ce7c2686487e600b6abe0b27528c6dfcf2ac66c
 });
 ```
 
@@ -262,6 +256,347 @@ limit(3, () => {
       console.log("This effect will only run 3 times");
     }
   });
+});
+```
+
+
+## The Effects class 
+
+The Effects class serves as the cornerstone of Skye’s reactive and event-driven architecture. It offers a unified interface for managing reactive state, handling events, and executing both synchronous and asynchronous effects. This streamlined approach enhances encapsulation, maintainability, and scalability, providing you with robust tools to build dynamic and responsive web applications.
+
+Key Functionalities
+
+1.	Reactive State Management:
+    -	Reactive Proxies: Creates reactive proxies for state objects, enabling automatic tracking and updating of dependencies.
+    - Dependency Tracking: Monitors which effects depend on which state properties, ensuring that changes trigger appropriate updates.
+2.	Event Handling:
+	  -	Event Subscription: Allows components and other parts of the application to subscribe to specific events.
+	  -	Event Emission: Facilitates the emission of events, notifying all subscribed listeners.
+	  -	One-Time Listeners: Supports listeners that are invoked only once, enhancing flexibility in event management.
+3.	Effect Management:
+    -	Synchronous Effects (sync): Executes effects immediately, suitable for straightforward state manipulations.
+    - Asynchronous Effects (async): Handles effects that involve asynchronous operations, awaiting their completion.
+	  -	Advanced Asynchronous Operations (obtain): Manages complex asynchronous tasks with features like caching, retries, debouncing, and throttling.
+    - Fire-and-Forget Effects (future): Executes asynchronous effects without awaiting their completion, ideal for non-blocking operations.
+4.	Utility Functions:
+	  -	Delay: Introduces pauses in execution, useful for retry mechanisms.
+	  -	Debounce and Throttle: Controls the frequency of effect executions to optimize performance and prevent excessive operations.
+
+Documentation: Using the Effects Class
+
+1. Importing the Effects Instance
+
+To utilize the reactive and event-driven functionalities, import the singleton effects instance from the Effects module.
+```ts
+import { effects } from './core/Effects.ts';
+import { reactive } from './core/reactive.ts';
+```
+
+2. Creating Reactive State
+
+Use the reactive function to create a reactive state object. This object will automatically track dependencies and trigger effects upon state changes.
+```ts
+interface AppState {
+  count: number;
+  user: { name: string; age: number } | null;
+}
+
+const state = reactive<AppState>({
+  count: 0,
+  user: null,
+});
+```
+
+3. Defining Effects
+
+a. Synchronous Effects (sync)
+
+Define effects that execute synchronously. These are ideal for simple state manipulations or computations.
+```ts
+effects.sync(() => {
+  console.log(`Count has changed to: ${state.count}`);
+});
+```
+	•	Parameters:
+	•	effectFn: The synchronous function to execute.
+	•	options (optional): Configuration options (e.g., immediate).
+
+b. Asynchronous Effects (async)
+
+Handle effects that involve asynchronous operations, such as data fetching or timers.
+```ts
+effects.async(async () => {
+  const response = await fetch('/api/data');
+  state.user = await response.json();
+});
+```
+	•	Parameters:
+	•	effectFn: The asynchronous function to execute.
+	•	options (optional): Configuration options (e.g., immediate).
+
+c. Advanced Asynchronous Operations (obtain)
+
+Manage complex asynchronous tasks with enhanced control features.
+```ts
+effects.obtain(fetchUserData, {
+  cache: true,
+  retries: 3,
+  onStart: () => console.log('Fetching user data...'),
+  onComplete: (data) => console.log('User data fetched:', data),
+  onError: (error) => console.error('Error fetching data:', error),
+  debounce: 300,
+});
+```
+	•	Parameters:
+	•	asyncOperation: The asynchronous function to execute.
+	•	options (optional):
+	•	cache: Enables caching of the operation result.
+	•	retries: Number of retry attempts upon failure.
+	•	onStart: Callback invoked at the start of the operation.
+	•	onProgress: Callback for progress updates.
+	•	onComplete: Callback invoked upon successful completion.
+	•	onError: Callback invoked upon encountering an error.
+	•	debounce: Delays the execution by specified milliseconds.
+	•	throttle: Limits the execution frequency to specified milliseconds.
+
+d. Fire-and-Forget Effects (future)
+
+Execute asynchronous effects without waiting for their completion. Useful for non-blocking operations.
+```ts
+//Todo: remove await and introduce and event on completion
+effects.future(async () => {
+  await sendAnalyticsData(state.user);
+});
+```
+	•	Parameters:
+	•	effectFn: The asynchronous function to execute.
+	•	options (optional): Configuration options (e.g., immediate).
+
+4. Event Handling
+
+a. Subscribing to Events
+
+Listen to specific events emitted by the Effects class.
+```ts
+effects.on('effectRun', (payload) => {
+  console.log('An effect has run:', payload);
+});
+```
+b. Unsubscribing from Events
+
+Remove previously subscribed listeners to prevent memory leaks or unwanted behavior.
+```ts
+const listener = (payload) => {
+  console.log('Effect completed:', payload);
+};
+```
+```ts
+effects.on('effectRun', listener);
+
+// Later in the code
+effects.off('effectRun', listener);
+```
+c. One-Time Listeners (once)
+
+Listen to an event only once. The listener is automatically removed after its first invocation.
+```ts
+effects.once('operationComplete', (payload) => {
+  console.log('Operation completed:', payload);
+});
+```
+
+The Effects class is a unified solution that integrates reactive state management, event handling, and effect execution. It extends the EventEmitter class to facilitate event-driven interactions and incorporates reactive proxies for dynamic state updates.
+
+Reactive State Management
+
+reactive
+```ts
+public reactive<T extends object>(target: T): T
+```
+	•	Description: Creates a reactive proxy for the provided target object. Any changes to the reactive properties will automatically trigger associated effects.
+	•	Parameters:
+	•	target: The object to be made reactive.
+	•	Returns: A reactive proxy of the target object.
+
+Effect Execution
+
+sync
+```ts
+public sync(effectFn: () => void, options?: EffectOptions): void
+```
+	•	Description: Defines and executes a synchronous effect function.
+	•	Parameters:
+	•	effectFn: The synchronous function to execute.
+	•	options (optional): Configuration options.
+	•	immediate (boolean): If false, the effect won’t run immediately upon definition. Defaults to true.
+
+async
+```ts
+public async async(effectFn: () => Promise<void>, options?: EffectOptions): Promise<void>
+
+	•	Description: Defines and executes an asynchronous effect function.
+	•	Parameters:
+	•	effectFn: The asynchronous function to execute.
+	•	options (optional): Configuration options.
+	•	immediate (boolean): If false, the effect won’t run immediately upon definition. Defaults to true.
+```
+obtain
+```ts
+public async obtain(
+  asyncOperation: () => Promise<any>,
+  options?: {
+    cache?: boolean;
+    retries?: number;
+    onStart?: Function;
+    onProgress?: Function;
+    onComplete?: Function;
+    onError?: Function;
+    debounce?: number;
+    throttle?: number;
+  }
+): Promise<any>
+```
+	•	Description: Executes an asynchronous operation with advanced handling features like caching, retries, debouncing, and throttling.
+	•	Parameters:
+	•	asyncOperation: The asynchronous function to execute.
+	•	options (optional): Configuration options.
+	•	cache (boolean): Enables caching of the operation result.
+	•	retries (number): Number of retry attempts upon failure.
+	•	onStart (Function): Callback invoked at the start of the operation.
+	•	onProgress (Function): Callback for progress updates.
+	•	onComplete (Function): Callback invoked upon successful completion.
+	•	onError (Function): Callback invoked upon encountering an error.
+	•	debounce (number): Delays execution by specified milliseconds.
+	•	throttle (number): Limits execution frequency to specified milliseconds.
+	•	Returns: The result of the asynchronous operation.
+
+future
+```ts
+public future(effectFn: () => Promise<void>, options?: EffectOptions): void
+```
+	•	Description: Executes an asynchronous effect without awaiting its completion. Suitable for fire-and-forget operations.
+	•	Parameters:
+	•	effectFn: The asynchronous function to execute.
+	•	options (optional): Configuration options.
+	•	immediate (boolean): If false, the effect won’t run immediately upon definition. Defaults to true.
+1. Utility Functions
+
+delay
+```ts
+private delay(ms: number): Promise<void>
+```
+	•	Description: Introduces a delay in execution.
+	•	Parameters:
+	•	ms: Milliseconds to delay.
+	•	Returns: A promise that resolves after the specified delay.
+
+debounce
+```ts
+private debounce(fn: Function, delayMs: number): Promise<any>
+```
+	•	Description: Delays function execution by the specified milliseconds, preventing rapid successive executions.
+	•	Parameters:
+	•	fn: The function to debounce.
+	•	delayMs: The delay in milliseconds.
+	•	Returns: A debounced promise.
+
+throttle
+```ts
+private throttle(fn: Function, limitMs: number): Promise<any>
+```
+	•	Description: Limits the frequency of function executions to once per specified interval.
+	•	Parameters:
+	•	fn: The function to throttle.
+	•	limitMs: The time limit in milliseconds.
+	•	Returns: A throttled promise.
+
+### Events
+
+The Effects class emits various events to notify subscribed listeners about the lifecycle stages of effects and operations. Components and other parts of the application can listen to these events to perform actions in response.
+
+Available Events
+
+	1.	effectRun
+	•	Description: Emitted when an effect (synchronous, asynchronous, or future) is executed.
+	•	Payload:
+```ts
+{
+  type: 'sync' | 'async' | 'future';
+  effectFn: EffectFunction;
+}
+```
+
+	2.	effectError
+	•	Description: Emitted when an error occurs during the execution of an effect.
+	•	Payload:
+```ts
+{
+  type: 'sync' | 'async' | 'future';
+  error: any;
+}
+```
+
+	3.	operationStart
+	•	Description: Emitted at the start of an asynchronous operation managed by obtain.
+	•	Payload:
+```ts
+{
+  asyncOperation: Function;
+}
+```
+
+	4.	operationComplete
+	•	Description: Emitted upon the successful completion of an asynchronous operation managed by obtain.
+	•	Payload:
+```ts
+{
+  asyncOperation: Function;
+  result: any;
+}
+```
+
+	5.	operationError
+	•	Description: Emitted when an error occurs during an asynchronous operation managed by obtain.
+	•	Payload:
+```ts
+{
+  asyncOperation: Function;
+  error: any;
+}
+```
+
+
+#### Subscribing to Events
+
+Use the on method to subscribe to events.
+```ts
+effects.on('effectRun', (payload) => {
+  console.log('An effect has run:', payload);
+});
+
+effects.on('operationComplete', (payload) => {
+  console.log('Operation completed:', payload);
+});
+```
+Unsubscribing from Events
+
+Use the off method to remove event listeners.
+```ts
+const effectRunListener = (payload) => {
+  console.log('Effect run:', payload);
+};
+
+effects.on('effectRun', effectRunListener);
+
+// Later in the code
+effects.off('effectRun', effectRunListener);
+```
+One-Time Event Listeners
+
+Use the once method to listen to an event only once.
+```ts
+effects.once('operationError', (payload) => {
+  console.error('Operation failed:', payload);
 });
 ```
 
@@ -809,542 +1144,299 @@ effect.obtain({
 })
 ```
 
-<<<<<<< HEAD
 **TODO - ONGOING**
-=======
-## Skye: Hybrid Responsiveness and Utility Components
 
-Skye provides a hybrid responsiveness solution, allowing you to build responsive components effortlessly, with flexibility to customize or opt out when needed. This system combines CSS variables, viewport-based sizing, Flexbox/Grid layouts, and utility classes, giving developers full control over responsiveness.
+## Observables
 
-### Key Features:
 
-- Opt-in Responsiveness: Skye’s components are responsive by default, but developers can easily opt-out or customize the behavior.
-- Custom Utility Components: Pre-built, extensible components like SkyeGrid and SkyeSpacing provide common responsive patterns that can be used directly in templates.
-- Easy Customization: Developers can extend the provided utility components or create new ones using JavaScript, giving them more flexibility than pure CSS solutions.
-- Viewport-Based Sizing: Automatically adjust layouts, padding, margins, and font sizes based on the viewport, ensuring fluid scaling across devices.
 
-### Opt-in/Opt-out Responsiveness
+1. Introduction to Observables in Skye
 
-By default, Skye components are responsive. If you wish to disable this behavior, simply pass responsive = false when extending SkyeResponsiveComponent.
+  Observables are a cornerstone of reactive programming, allowing your application to handle asynchronous data streams efficiently. In Skye, observables provide a simple yet powerful mechanism to emit data over time, subscribe to these emissions, and apply transformations or filters as needed.
 
-Example: Opting Out of Responsiveness
+  Key Benefits:
 
-```typescript
-class MyComponent extends SkyeResponsiveComponent {
-  constructor() {
-    super({}, false); // Opt out of responsiveness
-  }
+	  •	Simplicity: Easy to understand and use without the overhead of complex libraries.
+	  • Composable: Combine multiple observables seamlessly.
+	  •	Reactive: Automatically respond to data changes, enhancing interactivity.
 
-  template(): string {
-    return `<p>This component is not responsive by default.</p>`;
-  }
-}
+2. Core Observable Functionalities
 
-customElements.define('my-component', MyComponent);
+ a. Creating Observables
+
+Use the create method to initialize a new observable. This method returns a unique symbol that identifies the observable.
+```ts
+// Create a new observable for user data
+const userDataObservable = effects.observables.create();
+
+// Create a new observable for notifications
+const notificationsObservable = effects.observables.create();
 ```
-
-## Responsive Utility Components
-
-Skye includes a set of responsive utility components that make it easy to handle layouts, spacing, and other common patterns.
-
-### SkyeGrid
-
-<skye-grid> is a responsive grid container that automatically adjusts the number of columns based on screen size.
-
-Usage:
-
-```html
-<skye-grid>
-  <div class="item">Item 1</div>
-  <div class="item">Item 2</div>
-  <div class="item">Item 3</div>
-</skye-grid>
-```
-
-By default:
-
-	•	Mobile (below 768px): One column
-	•	Tablet (768px - 1024px): Two columns
-	•	Desktop (1024px and above): Three columns
-
-You can extend the grid component to define custom column layouts.
-
-### SkyeSpacing
-
-```html
-<skye-spacing> is a responsive spacing container that adjusts padding based on screen size.
-```
-
-Usage:
-
-´´´html
-<skye-spacing>
-  <p>This content has responsive padding based on the viewport size.</p>
-</skye-spacing>
-```
-
-By default:
-
-	•	Mobile (below 768px): Small padding
-	•	Tablet (768px - 1024px): Medium padding
-	•	Desktop (1024px and above): Large padding
-
-### Extending Utility Components
-
-You can easily extend the utility components to customize their behavior:
-
-Example: Custom SkyeGrid
-
-```typescript
-class CustomGrid extends SkyeGrid {
-  handleResize() {
-    // Custom column layouts
-    const gridContainer = this.querySelector('.grid-container');
-    if (window.innerWidth < 640) {
-      gridContainer.style.gridTemplateColumns = '1fr';
-    } else if (window.innerWidth >= 640 && window.innerWidth < 960) {
-      gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    } else {
-      gridContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
-    }
-  }
-}
-
-customElements.define('custom-grid', CustomGrid);
-```
-
-### Viewport-Based Sizing and CSS Variables
-
-Skye uses global CSS variables to automatically scale layouts, padding, and font sizes based on the viewport. These variables can be overridden or customized:
-
-```css
-:root {
-  --font-size-sm: calc(1vw + 0.5em);
-  --font-size-md: calc(1.5vw + 0.75em);
-  --font-size-lg: calc(2vw + 1em);
-  
-  --padding-sm: calc(1vw + 5px);
-  --padding-md: calc(1.5vw + 10px);
-  --padding-lg: calc(2vw + 15px);
-  
-  --container-width-sm: 90vw;
-  --container-width-md: 80vw;
-  --container-width-lg: 70vw;
-}
-```
-
-By default, these variables are applied to components like <skye-grid> and <skye-spacing>. You can override them globally or on a per-component basis to customize behavior.
-
-Skye’s hybrid responsiveness system gives you the flexibility to create responsive layouts without needing to manage breakpoints or write custom media queries. Using the provided utility components, you can easily extend and customize responsive behavior using JavaScript, offering more flexibility than traditional CSS utility classes.
-
-## Skye: Functional Components and Web Component Abstraction
-
-Skye introduces a powerful abstraction layer above native web components, enabling developers to define functional components that boil down to web components behind the scenes. This offers a simpler API for defining components while leveraging the power and efficiency of native web components for performance and compatibility.
-
-### Functional Components in Skye
-
-Functional components in Skye allow developers to define their UI declaratively using JavaScript. These components are lightweight and reactive, automatically updating when state changes occur. Under the hood, Skye transforms these functional components into native web components.
-
-### Key Features
-
-- Declarative UI: Define your UI with simple, functional components that are easy to reason about.
-- Native Web Components: Skye compiles your functional components into efficient web components for native browser support.
-- Automatic Reactivity: Skye’s reactivity engine ensures your components update automatically when state changes.
-- Responsiveness and Accessibility: Skye components are responsive and accessible by default, with easy customization options.
-- Automatic Cleanup: Skye automatically handles cleanup of effects and state when components are unmounted, so developers don’t need to manage unmounting.
-
-### Defining Functional Components
-
-A functional component in Skye is defined as a simple function that returns a UI structure. Skye automatically handles the lifecycle, rendering, and reactivity of the component.
-
-Example: Simple Functional Component
-
-```typescript
-import { SFC, effect } from 'skye';
-
-function MyComponent() {
-  const state = reactive({ count: 0 });
-
-  effect({
-   doSomething() {
-      console.log('Component mounted or state updated.');
-    }
-  });
-
-  return (
-    <div>
-      <h1>Count: {state.count}</h1>
-      <button onclick={() => state.count++}>Increment</button>
-    </div>
-  );
-} 
-
-export default functionalComponent(MyComponent);
-```
-
-### Key Features:
-
-- Automatic Rendering: The MyComponent functional component will automatically rerender when state.count is updated.
--	Simplified API: You don’t need to manage the lifecycle or manually handle rendering. Skye handles it behind the scenes.
-- Web Component Integration: This functional component is transformed into a native web component under the hood, ensuring compatibility and performance.
-- Automatic Cleanup: Effects inside the component, such as the effect() hook, are cleaned up automatically when the component is removed from the DOM.
-
-### Functional Components with effect
-
-The effect() function in Skye automatically handles side effects, such as data fetching or event listeners, when the component is mounted or updated. Since Skye automatically cleans up effects, there is no need for an explicit onUnmount.
-
-Example: Fetching Data with effect
-
-```typescript
-import { SFC, effect } from 'skye';
-
-function FetchDataComponent() {
-  const state = reactive({ data: null });
-
-  effect.obtain({
-    getData() {
-      fetch('/api/data')
-      .then(response => response.json())
-      .then(data => state.data = data);
-    // Cleanup (like removing listeners or aborting requests) happens automatically when the component is removed
-    }
-  });
-
-  return (
-    <div>
-      {state.data ? (
-        <p>Data: {state.data}</p>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
-  );
-}
-
-export default functionalComponent(FetchDataComponent);
-```
-
-effect Hook:
-
-	•	Runs on Mount: Automatically handles side effects when the component is first rendered or when the state changes.
-	•	Automatic Cleanup: Cleanup for effects is managed by Skye, so developers don’t need to manually handle it.
-
-### Responsive and Accessible Functional Components
-
-As with all Skye components, functional components are responsive and accessible by default. You can opt out of or extend the default behavior as needed.
-
-Example: Responsive Functional Component
-
-```typescript
-import { functionalComponent } from 'skye';
-
-function ResponsiveComponent() {
-  return (
-    <div class="responsive-container">
-      <p>This component is responsive by default.</p>
-    </div>
-  );
-}
-
-export default functionalComponent(ResponsiveComponent);
-```
-
-In this example, the component will adjust its layout based on the screen size, utilizing the hybrid responsiveness solution provided by Skye.
-
-### Skye Utility Components: Extending Functional Components
-
-Skye also provides a set of utility components that can be used inside templates or functional components to handle common responsive and layout patterns. These components can be extended and customized using JavaScript, allowing developers to tailor them to their needs.
-
-Example: SkyeGrid in a Functional Component
-
-```typescript
-import { functionalComponent } from 'skye';
-import { SkyeGrid } from './components/utilities/SkyeGrid';
-
-function CardLayout() {
-  return (
-    <SkyeGrid>
-      <div class="card">Card 1</div>
-      <div class="card">Card 2</div>
-      <div class="card">Card 3</div>
-    </SkyeGrid>
-  );
-}
-
-export default functionalComponent(CardLayout);
-```
-Here, the SkyeGrid utility component is used inside a functional component to provide a responsive grid layout.
-
-### Extending Utility Components
-
-Developers can extend and customize Skye’s utility components. This makes it easy to reuse and adapt components like grids, spacing containers, and more, all while benefiting from Skye’s responsiveness and reactivity.
-
-Example: Extending a Utility Component
-
-```typescript
-import { SkyeGrid } from './components/utilities/SkyeGrid';
-
-class CustomGrid extends SkyeGrid {
-  handleResize() {
-    const gridContainer = this.querySelector('.grid-container');
-    if (window.innerWidth < 640) {
-      gridContainer.style.gridTemplateColumns = '1fr';
-    } else if (window.innerWidth >= 640 && window.innerWidth < 960) {
-      gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
-    } else {
-      gridContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
-    }
-  }
-}
-
-customElements.define('custom-grid', CustomGrid);
-```
-
-
-## Rendering Engine with Caching, Reactivity, and Optimizations
-
-### Template Caching and Hashing
-
-In Skye, templates are cached to prevent unnecessary re-rendering, improving overall performance. We use a fast hashing algorithm (BLAKE3) to compare the current template with the cached version.
-
-How It Works:
-
-- Template Hashing: Each template is hashed using BLAKE3 before rendering.
-- Cache Check: Before rendering, Skye checks if the current template’s hash matches the cached hash. If the template hasn’t changed, it skips re-rendering.
-- Cache Update: If the template has changed, Skye updates the cache with the new hash and renders the template.
-
-Example:
-
-```typescript
-async function hashTemplate(template: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(template);
-  const res = await crypto.subtle.digest("BLAKE3", data);
-  return byteArrayToHexString(res);
-}
-
-const templateCache = new Map<string, { hash: string, renderFunction: Function }>();
-
-export async function renderTemplate(template: string, state: Record<string, any>, element: HTMLElement) {
-  const templateHash = await hashTemplate(template);
-
-  const cachedTemplate = templateCache.get(template);
-  if (cachedTemplate && cachedTemplate.hash === templateHash) {
-    // Skip re-rendering if the template hasn’t changed
-    return;
-  }
-
-  // Parse the template and update the cache
-  const tokens = parseTemplate(template);
-  const templateFunction = new Function(...Object.keys(state), `return \`${tokens.join('')}\`;`);
-  templateCache.set(template, { hash: templateHash, renderFunction: templateFunction });
-
-  const renderContent = templateFunction(...Object.values(state));
-  element.innerHTML = renderContent;
-
-  // Fine-grained reactivity ensures minimal DOM updates
-  effect({
-    update() {
-      const updatedContent = templateFunction(...Object.values(state));
-      if (element.innerHTML !== updatedContent) {
-        element.innerHTML = updatedContent;
-      }
-    }
-  });
-}
-```
-
-### Fine-Grained Reactivity
-
-Skye’s reactivity system ensures that only the parts of the DOM affected by state changes are updated, minimizing unnecessary DOM manipulations.
-
-How It Works:
-
--	Each dynamic expression within the template is tracked and updated only when its corresponding state changes.
--	This approach ensures fine-grained updates to the DOM, significantly boosting performance in large or frequently updated components.
-
-Example:
-
-```typescript
-const dependencies = new Map<string, Function>();
-
-function renderTemplateWithReactivity(template: string, state: Record<string, any>, element: HTMLElement) {
-  const tokens = parseTemplate(template);
-
-  tokens.forEach((token, index) => {
-    if (token.startsWith('{{') && token.endsWith('}}')) {
-      const expression = token.slice(2, -2).trim();
-      dependencies.set(expression, () => {
-        const result = new Function(...Object.keys(state), `return ${expression};`)(...Object.values(state));
-        if (element.children[index]) {
-          element.children[index].textContent = result;
-        }
-      });
-    }
-  });
-
-  tokens.forEach((token, index) => {
-    if (!token.startsWith('{{')) {
-      if (element.children[index]) {
-        element.children[index].textContent = token;
-      }
-    } else {
-      dependencies.get(token.slice(2, -2).trim())?.();
-    }
-  });
-
-  effect({
-    update: () => {
-      dependencies.forEach(fn => fn());
-    }
-  });
-}
-```
-
-### Arbitrary Javascript
-Skye forgoes a formal templating language and instead gives you the full power of javascript inside html.
-Use what you know without limitations, skye lets you interpolate variables, define variables and run functions, and interpolate the return value from arbitrarily complax expressions.
-
-```typescript
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="/static/styles.css" />
-  </head>
-  <body>
-    <h1>{{ title }}</h1>
-    <p>You have visited this page {{ count }} times.</p>
-    <p>{{ skye`${() => { 
-      console.log("This is arbitrary JavaScript inside a template"); 
-      return "This text is returned from the skye function";
-    }}` }}</p>
-    <p>{{ skye`Current time: ${new Date().toLocaleTimeString()}` }}</p>
-    <script src="/public/app.js"></script>
-  </body>
-</html>
-```
-
-### Performance Optimizations
-
-In addition to caching and reactivity, Skye introduces several other performance optimizations:
-
-	1.	Memoized Expressions: Skye caches the results of expensive expressions, reducing redundant computations.
-	2.	Debounced or Batched State Updates: Skye can group multiple state changes together, preventing frequent, costly re-renders during rapid state changes.
-
-# Skye Server
-
-The Skye Server is a powerful and flexible server implementation designed to work seamlessly with the Skye framework. It provides a robust foundation for building scalable and reactive web applications.
-
-## Key Features
-
-- **Advanced Routing**: Support for pattern matching and route parameters.
-- **Flexible Middleware System**: Easy integration of custom middleware for various purposes.
-- **Built-in Error Handling**: Graceful error management and informative error responses.
-- **Logging**: Built-in request and response logging for debugging and monitoring.
-- **Server-side Reactivity**: Novel approach to managing server-side state reactively while the request and response remain stateless.
-- **TypeScript Support**: Fully typed for improved developer experience and code reliability.
-
-## Basic Usage
-
-```typescript
-import { SkyeServer } from './skye-server';
-
-const server = new SkyeServer();
-
-// Add middleware
-server.use(errorHandler);
-server.use(logger);
-server.use(jsonParser);
-
-// Define routes
-server.route("GET", "/api/users/:id", async (ctx) => {
-  const userId = ctx.request.params.id;
-  ctx.response.body = { userId, message: "User details" };
+ b. Subscribing to Observables
+
+Subscribe to an observable to listen for data emissions. The subscribe method returns an unsubscribe function to stop listening when needed.
+```ts
+// Subscribe to user data observable
+const unsubscribeUser = effects.observables.subscribe(userDataObservable, (data) => {
+  console.log('User Data Received:', data);
 });
 
-server.route("POST", "/api/users", async (ctx) => {
-  const userData = ctx.request.body;
-  ctx.response.body = { message: "User created", user: userData };
+// Subscribe to notifications observable
+const unsubscribeNotification = effects.observables.subscribe(notificationsObservable, (message) => {
+  console.log('New Notification:', message);
+});
+```
+
+ c. Emitting Data
+
+Emit data to all subscribers of a specific observable using the emit method.
+```ts
+// Emit user data
+effects.observables.emit(userDataObservable, { id: 'u123', name: 'Alice', email: 'alice@example.com' });
+```
+
+// Emit a notification message
+```ts
+effects.observables.emit(notificationsObservable, 'You have a new message!');
+```
+
+ d. Unsubscribing
+Use the unsubscribe function returned by the subscribe method to stop listening to an observable.
+```ts
+// Unsubscribe from user data observable
+unsubscribeUser();
+```
+
+// Unsubscribe from notifications observable
+```ts
+unsubscribeNotification();
+```
+ e. Completing Observables
+
+Complete an observable to remove all subscribers and prevent further emissions.
+```ts
+// Complete the user data observable
+effects.observables.complete(userDataObservable);
+
+// Complete the notifications observable
+effects.observables.complete(notificationsObservable);
+```
+
+
+1. Enhancing Observables with Operators
+
+Skye provides a few essential operators for observables: map, filter, and debounce. These operators allow you to transform and control the flow of data within observables.
+
+  - a. Map Operator
+
+Transforms each emitted value using a projection function.
+
+```ts
+// Create a 'data' observable
+const dataObservable = effects.observables.create();
+
+// Create a mapped observable that extracts the user's name
+const userNameObservable = effects.observables.map(dataObservable, (data) => data.name);
+
+// Subscribe to the mapped observable
+effects.observables.subscribe(userNameObservable, (name) => {
+  console.log('User Name:', name);
 });
 
-// Start the server
-Deno.serve({ port: 8000 }, (req) => server.handleRequest(req));
+// Emit data
+effects.observables.emit(dataObservable, { id: 'u123', name: 'Alice', email: 'alice@example.com' });
+// Output: User Name: Alice
 ```
 
-## Core Concepts
+b. Filter Operator
 
-### Context Object
+Filters emitted values based on a predicate function.
 
-The `Context` object is at the heart of the Skye's Server. It encapsulates all the information about the current request and response, and is passed through all middleware and route handlers. (Incomplete)
+```ts
+// Create a 'notifications' observable
+const notificationsObservable = effects.observables.create();
 
-```typescript
-interface Context {
-  request: {
-    method: string;
-    url: string;
-    headers: Headers;
-    params: Record<string, string>;
-    query: Record<string, string>;
-    body?: any;
-  };
-  response: {
-    status: number;
-    body: any;
-    headers: Headers;
-  };
-  state: Record<string, any>;
-}
+// Create a filtered observable for messages containing 'urgent'
+const urgentNotifications = effects.observables.filter(notificationsObservable, (message) => message.includes('urgent'));
+
+// Subscribe to the filtered observable
+effects.observables.subscribe(urgentNotifications, (message) => {
+  console.log('Urgent Notification:', message);
+});
+
+// Emit notifications
+effects.observables.emit(notificationsObservable, 'You have a new message.');
+effects.observables.emit(notificationsObservable, 'Urgent: Server downtime at midnight.');
+// Output:
+// Urgent Notification: Urgent: Server downtime at midnight.
 ```
 
-### Middleware
+ c. Debounce Operator
 
-Middleware functions in Skye Server have the following signature:
+Delays emissions until a specified duration has passed without a new emission, useful for handling rapid, successive data points.
 
-```typescript
-type Middleware = (ctx: Context, next: () => Promise<void>) => Promise<void>;
+```ts
+// Create a 'search' observable
+const searchObservable = effects.observables.create();
+
+// Create a debounced observable with a 300ms delay
+const debouncedSearch = effects.observables.debounce(searchObservable, 300);
+
+// Subscribe to the debounced observable
+effects.observables.subscribe(debouncedSearch, (query) => {
+  console.log('Search Query:', query);
+});
+
+// Emit search queries rapidly
+effects.observables.emit(searchObservable, 'A');
+effects.observables.emit(searchObservable, 'Ap');
+effects.observables.emit(searchObservable, 'App');
+effects.observables.emit(searchObservable, 'Appl');
+effects.observables.emit(searchObservable, 'Apple');
+// Only 'Apple' will be logged after 300ms of inactivity
+// Output after 300ms:
+// Search Query: Apple
 ```
 
-Middleware can perform operations before and after the next middleware or route handler is called. They can modify the `Context` object, handle errors, or perform any other necessary operations.
+## State
 
-### Routing
+### Introduction
 
-The Skye Server supports flexible routing with pattern matching and route parameters. Routes are defined using the `route` method:
+Skye’s State Management system is designed to handle both client-side and server-side states efficiently. By centralizing state control on the server, Skye enhances security, scalability, and data integrity, while providing a reactive and intuitive interface for developers.
 
-```typescript
-server.route(method: string, path: string, handler: (ctx: Context) => Promise<void>)
+The State class provides a centralized, reactive state management system with the following features:
+
+	•	Global Reactive State: Centralized state accessible throughout the application.
+	•	Selective Subscriptions: Components can subscribe to specific state slices.
+	•	Real-Time Reactivity: Utilize WebSockets for instant state synchronization between server and clients.
+	•	Derived State with Operators: Supports map, filter, and debounce operators for derived data.
+	•	Middleware Support: Allows intercepting and processing state mutations.
+	•	Persistence: Automatically saves and loads state.
+	•	Automatic UI Updates: Integrates seamlessly with Skye’s reactivity system for automatic UI rendering upon state changes.
+	•	Centralized State Store: Manage application state on the server for enhanced security and persistence.
+	•	Namespacing: Organized method namespaces for clarity and to prevent naming collisions.
+	•	Minimal Boilerplate: Simple and intuitive API reduces development overhead.
+
+
+
+### Architecture Overview
+
+Skye’s State Management comprises two primary components:
+
+	1.	Server-Side StateStore: Manages the global application state, handles subscriptions, applies middleware, and persists data.
+	2.	Client-Side StateManager: Connects to the server via WebSockets, subscribes to state changes, and provides an API for components to interact with the state.
+
+This architecture ensures that state is securely managed on the server while providing reactive and efficient updates to connected clients.
+
+#### Server-Side State Management
+
+Centralizing state on the server enhances security and allows for persistent state across user sessions.
+
+#### StateStore Class
+
+The StateStore class manages the global state, handles subscriptions, applies middleware, and interacts with the dedicated data layer for optional persistence.
+
+#### Middleware Integration
+
+Middleware functions allow you to intercept and process state mutations for purposes like authentication, validation, and logging.
+
+
+#### Client-Side State Management
+
+On the client side, Skye provides a StateManager class that connects to the server via WebSockets, allowing components to interact with the global state seamlessly.
+
+##### Integrating with Components
+
+Components can utilize the StateManager to interact with the global state seamlessly.
+
+### Advanced Features
+
+#### Derived State
+
+Derived state allows you to compute values based on the existing state without storing redundant data.
+
+#### Persistence
+
+Skye’s State Management system automatically persists state changes to the selected in memory or disk database, ensuring data durability across server restarts and user sessions.
+
+	•	Automatic Saving: Every state mutation triggers a save operation.
+	•	Automatic Loading: Upon server startup, the state is loaded, restoring the application’s state.
+
+#### Middleware Support
+
+Middleware functions enable you to intercept and process state mutations for purposes like authentication, validation, and logging.
+
+
+### API Reference
+
+#### StateManager
+
+Description:
+StateManager is a client-side class that manages the connection to the server-side state store via WebSockets. It provides methods to get, set, and subscribe to state changes.
+
+##### Methods:
+
+- get(key: string | symbol): any
+Retrieves the value associated with the specified state key.
+-	set(key: string | symbol, value: any): void
+Sets the value for the specified state key and sends the update to the server.
+-	subscribe(key: string | symbol, callback: Function): Function
+Subscribes to changes of a specific state key. Returns an unsubscribe function.
+
+##### Usage Example:
+```ts
+import { stateManager } from './core/StateManager.js';
+
+// Get current user
+const user = stateManager.get('user');
+
+// Set user data
+stateManager.set('user', { id: 'u123', name: 'Alice', email: 'alice@example.com' });
+
+// Subscribe to user changes
+const unsubscribe = stateManager.subscribe('user', (newUser) => {
+  console.log('User updated:', newUser);
+});
+
+// To unsubscribe
+unsubscribe();
 ```
 
-Route parameters (e.g., `:id` in `/users/:id`) are automatically parsed and available in `ctx.request.params`.
 
-### Server-side Reactivity
+#### StateStore
 
-Skye Server introduces a novel concept of server-side reactivity. This allows you to maintain reactive state on the server, which can be useful for various purposes such as caching, real-time updates, or session management.
+##### Description:
+StateStore is a server-side class that manages the global application state. It handles state mutations, applies middleware, persists data to Redis, and notifies subscribers of state changes.
 
-```typescript
-const createReactiveMiddleware = () => {
-  const state = reactive({
-    connections: 0,
-    lastAccess: new Date(),
-  });
+##### Methods:
 
-  return async (ctx: Context, next: () => Promise<void>) => {
-    state.connections++;
-    state.lastAccess = new Date();
-    ctx.state.reactive = state;
-    await next();
-  };
-};
+-	use(middleware: Function): void
+Adds a middleware function to process state mutations.
+-	setState(key: string, value: any): Promise<void>
+Sets the value for the specified state key, applies middleware, saves to Redis, and notifies subscribers.
+-	getAllState(): Object
+Retrieves the entire state object.
+-	subscribe(callback: Function): Function
+Subscribes to all state changes. Returns an unsubscribe function.
 
-server.use(createReactiveMiddleware());
+##### Usage Example:
+```ts
+const { StateStore } = require('./StateStore.js');
+const { loggerMiddleware } = require('./middleware/logger.js');
+
+const stateStore = new StateStore();
+
+// Use logging middleware
+stateStore.use(loggerMiddleware);
+
+// Set user data
+stateStore.setState('user', { id: 'u123', name: 'Alice', email: 'alice@example.com' });
+
+// Subscribe to state changes
+const unsubscribe = stateStore.subscribe((key, value) => {
+  console.log(`State changed - ${key}:`, value);
+});
+
+// To unsubscribe
+unsubscribe();
 ```
-
-This reactive state can be accessed and modified in your route handlers or other middleware.
-
-The Skye Server provides a powerful and flexible foundation for building modern web applications. By leveraging its advanced features like middleware, routing, and server-side reactivity, you can create scalable and efficient server-side applications that integrate seamlessly with the Skye framework.
-
-Skye provides an advanced reactivity system, powerful async operation handling, and parallel execution features through worker pools. By combining these tools, Skye ensures high performance and scalability in modern web applications while giving developers full control over how their applications behave.
-
-## TODO: ONGOING
->>>>>>> 5ce7c2686487e600b6abe0b27528c6dfcf2ac66c
