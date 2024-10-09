@@ -6,9 +6,9 @@ import { contentTypeMiddleware } from "./middleware/contentType.ts";
 import { jsonParser } from "./middleware/jsonParser.ts";
 import { corsMiddleware } from "./middleware/cors.ts";
 import { join } from "https://deno.land/std@0.203.0/path/mod.ts";
-import { effect, reactive } from "./services/reactive.ts";
+import { reactive } from "./services/reactive.ts";
+// @ts-ignore
 import { routes } from "../server/data/mappings.ts";
-
 export type Middleware = (
   ctx: Context,
   next: () => Promise<void>
@@ -41,33 +41,10 @@ skyeServer.use(errorHandler);
 skyeServer.use(jsonParser);
 skyeServer.use(corsMiddleware);
 
-skyeServer.route("GET", "/welcome", async (ctx) => {
-  const data = reactive({ title: "Welcome to Skye Framework", count: 0 });
-
-  effect({
-    update: () => {
-      data.count++;
-    }
-  });
-
-  const templatePath = join(Deno.cwd(), "server", "templates", "welcome.html");
-
-  try {
-    const templateContent = await Deno.readTextFile(templatePath);
-    const renderedHtml = renderTemplate(templateContent, data);
-    ctx.response.headers.set("Content-Type", "text/html");
-    ctx.response.body = renderedHtml;
-  } catch (error) {
-    console.error("Error rendering template:", error);
-    ctx.response.status = 500;
-    ctx.response.body = "Internal Server Error";
-  }
-});
-
-
 skyeServer.route("GET", "/static/:filename", async (ctx) => {
   const filename = ctx.request.params.filename;
   const filePath = join(Deno.cwd(), "public", filename);
+  console.log(filePath);
 
   try {
     const content = await Deno.readFile(filePath);
@@ -96,21 +73,24 @@ function getContentType(ext: string | undefined): string {
   return mimeTypes[ext || ""] || "application/octet-stream";
 }
 
-skyeServer.route("GET", "/welcome", async (ctx) => {
-  const data = reactive({ title: "Welcome to Skye Framework", count: 0 });
-  data.count++;
+skyeServer.route("GET", "/welcome", async (ctx: Context) => {
+  const data = reactive({
+    title: "Welcome to Skye Framework",
+    user: { isLoggedIn: true, name: "Alice" },
+  });
+  const templatePath = join(
+    Deno.cwd(),
+    "src",
+    "server",
+    "static",
+    "welcome.html"
+  );
+  console.log(templatePath);
 
-  const templatePath = join(Deno.cwd(), "templates", "welcome.html");
-
-  try {
-    const renderedHtml = await renderTemplate(templatePath, data);
-    ctx.response.headers.set("Content-Type", "text/html");
-    ctx.response.body = renderedHtml;
-  } catch (error) {
-    console.error("Error rendering template:", error);
-    ctx.response.status = 500;
-    ctx.response.body = "Internal Server Error";
-  }
+  const renderedContent = await renderTemplate(templatePath, data);
+  console.log(renderedContent);
+  ctx.response.headers.set("Content-Type", "text/html");
+  ctx.response.body = renderedContent;
 });
 
 skyeServer.route("*", "*", async (ctx) => {
@@ -119,28 +99,28 @@ skyeServer.route("*", "*", async (ctx) => {
 });
 
 // Autoload routes
-for await (const dirEntry of Deno.readDir('./server/routes')) {
-  if (dirEntry.isFile && dirEntry.name.endsWith('.ts')) {
-    const routeModule = await import(`./routes/${dirEntry.name}`);
-    if (routeModule.default) {
-      routeModule.default(skyeServer);
-    }
-  }
-}
+// for await (const dirEntry of Deno.readDir('.server/routes')) {
+//   if (dirEntry.isFile && dirEntry.name.endsWith('.ts')) {
+//     const routeModule = await import(`./routes/${dirEntry.name}`);
+//     if (routeModule.default) {
+//       routeModule.default(skyeServer);
+//     }
+//   }
+// }
 
+// for (const [path, config] of Object.entries(routes)) {
+// skyeServer.route("GET", path, async (ctx) => {
+//     const _data = await config.fetchData(ctx.request.params);
+//     const renderedContent = config.template
 
-for (const [path, config] of Object.entries(routes)) {
-skyeServer.route("GET", path, async (ctx) => {
-    const data = await config.fetchData(ctx.request.params);
-    const renderedContent = config.template(data);
-
-    ctx.response.headers.set("Content-Type", "text/html");
-    ctx.response.body = renderedContent;
-  });
-}
+//     ctx.response.headers.set("Content-Type", "text/html");
+//     ctx.response.body = renderedContent;
+//   });
+// }
 
 // Start the server
 console.log("Server running on http://localhost:8000");
-Deno.serve({ hostname: "0.0.0.0", port: 8000 }, (req) =>
-  skyeServer.handleRequest(req)
-);
+Deno.serve({ hostname: "0.0.0.0", port: 8000 }, (req) => {
+  console.log(Deno.cwd());
+  return skyeServer.handleRequest(req);
+});

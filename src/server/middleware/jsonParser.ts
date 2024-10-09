@@ -1,7 +1,7 @@
 import { type Middleware } from "../server.ts";
 
 export const jsonParser: Middleware = async (ctx, next) => {
-  console.log("hello from json type", Deno.cwd());
+  console.log("hello from json", Deno.cwd());
   if (ctx.request.method === "POST" || ctx.request.method === "PUT") {
     if (typeof ctx.request.body === "string") {
       try {

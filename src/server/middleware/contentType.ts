@@ -1,7 +1,7 @@
 import type { Middleware } from "../server.ts";
 
 export const contentTypeMiddleware: Middleware = async (ctx, next) => {
-  await next();
+  console.log("hello from content type", Deno.cwd());
   const { response } = ctx;
   if (response.body && !response.headers.has("Content-Type")) {
     const contentType = detectContentType(response.body);
@@ -9,6 +9,7 @@ export const contentTypeMiddleware: Middleware = async (ctx, next) => {
       response.headers.set("Content-Type", contentType);
     }
   }
+  await next();
 };
 
 function detectContentType(body: any): string | undefined {

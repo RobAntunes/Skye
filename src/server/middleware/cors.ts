@@ -4,8 +4,7 @@ export const corsMiddleware = async (
   ctx: Context,
   next: () => Promise<void>
 ) => {
-  console.log("hello from cors", Deno.cwd());
-
+  console.log("hello cors");
   // Set CORS headers
   ctx.response.headers.set("Access-Control-Allow-Origin", "*"); // Allow all origins (change "*" to specific domain if needed)
   ctx.response.headers.set(

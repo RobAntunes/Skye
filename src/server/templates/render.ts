@@ -1,6 +1,6 @@
 // services/templateRenderer.ts
 
-import { encodeHex } from "https://deno.land/std@0.203.0/encoding/hex.ts";
+import { encodeHex } from "jsr:@std/encoding/hex";
 
 // The skye function to handle template strings and expressions
 
