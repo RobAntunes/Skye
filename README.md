@@ -7,30 +7,30 @@ Table of Contents
   1.	Key Features
   2.	Getting Started
   3.	Reactivity Engine
-    -	Core Concepts
-    -	API Reference
-    - Advanced Reactivity Tuning
-	4.	Template System
-	  - Skye Templating Engine
-	  -  Using skye Tagged Templates
-	  -	Arbitrary JavaScript Execution
-	5.	Responsive Utility Components
-	  -	SkyeGrid
-	  -	SkyeSpacing
-    -	Extending Utility Components
-	6.	Functional Components and Web Component Abstraction
-	  - Defining Functional Components
-	  -	Using effect and effect.obtain
-	  -	Responsive and Accessible Components
-	7.	Server
-	  -	Key Features
-	  -	Core Concepts
-	  -	API Reference
-	  -	Advanced Features
-	8.	Performance Optimizations
-	  -	Template Caching and Hashing
-	  -	Fine-Grained Reactivity
-	  -	Worker Pool for Parallel Processing
+     		-	Core Concepts
+    		-	API Reference
+    		- Advanced Reactivity Tuning
+  4.	Template System
+		- Skye Templating Engine
+	  	-  Using skye Tagged Templates
+	  	-	Arbitrary JavaScript Execution
+  5. 	Responsive Utility Components
+	  	-	SkyeGrid
+	  	-	SkyeSpacing
+    		-	Extending Utility Components
+  6.	Functional Components and Web Component Abstraction
+	  	- Defining Functional Components
+	 	-	Using effect and effect.obtain
+	  	-	Responsive and Accessible Components
+  7.	Server
+	  	-	Key Features
+	  	-	Core Concepts
+	  	-	API Reference
+	  	-	Advanced Features
+  8.	Performance Optimizations
+	  	-	Template Caching and Hashing
+	  	-	Fine-Grained Reactivity
+	  	-	Worker Pool for Parallel Processing
     	------------------
     	TODO: Finish ToC
 	------------------
