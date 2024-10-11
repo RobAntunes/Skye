@@ -286,8 +286,6 @@ Skye is designed with TypeScript at its core, providing advanced type safety for
 
 Skye is a powerful yet lightweight framework that combines real-time reactivity, global state management, and prototypal inheritance to provide a modern, flexible development experience. Whether you’re building a small app or a large-scale application, Skye’s event-driven architecture and use of JavaScript’s core features ensure high performance and scalability.
 
-Yes, you are correct in merging the two files. Since both statesync.ts and server.ts contained WebSocket-related code, consolidating them into a single server.ts file simplifies the structure and reduces redundancy. This will also help in managing server-side state and WebSocket handling in one place, making it easier to maintain.
-
 # Skye Server:
 
 The WebSocket server in Skye provides real-time communication between the client and server. This allows for reactive state management, where updates on either the client or server are instantly reflected on the other side.
