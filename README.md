@@ -17,12 +17,14 @@ Skye aims to be a complete full-stack framework, where both client and server si
 2.	Developer Experience (DX):
 Simplify common tasks (e.g., state management, UI updates, server communication) while offering clear, easy-to-understand APIs. Skye focuses on intuitive syntax, like:
 ```ts
-let count = 0,
-const state = reactive({
-    increment() {
-        count++;
-    }
-});
+const state = reactive({count: 0});
+state.count++
+
+const effects = effect({
+	log() {
+		console.log(count);
+	}
+}); 
 ```
 
 3.	Real-Time Updates with Resumability:
