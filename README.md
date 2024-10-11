@@ -18,7 +18,7 @@ Skye aims to be a complete full-stack framework, where both client and server si
 Simplify common tasks (e.g., state management, UI updates, server communication) while offering clear, easy-to-understand APIs. Skye focuses on intuitive syntax, like:
 ```ts
 let count = 0,
-reactive({
+const state = reactive({
     increment() {
         count++;
     }
