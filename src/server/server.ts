@@ -1,127 +1,112 @@
-import { renderTemplate } from "./templates/render.ts";
-import { SkyeServer } from "./classes/SkyeServer.ts";
-import { errorHandler } from "./middleware/errorHandler.ts";
-import { loggerMiddleware } from "./middleware/logger.ts";
-import { contentTypeMiddleware } from "./middleware/contentType.ts";
-import { jsonParser } from "./middleware/jsonParser.ts";
-import { corsMiddleware } from "./middleware/cors.ts";
-import { join } from "https://deno.land/std@0.203.0/path/mod.ts";
-import { Effects } from "./core/base/reactivity/Effects.ts";
-// @ts-ignore
-import { routes } from "../server/data/mappings.ts";
-export type Middleware = (
-  ctx: Context,
-  next: () => Promise<void>
-) => Promise<void>;
+// src/server/core/Server.ts
 
-export interface Context {
-  request: {
-    method: string;
-    url: string;
-    headers: Headers;
-    params: Record<string, string>;
-    query: Record<string, string>;
-    body?: any;
-    original: Request;
-  };
-  response: {
-    status: number;
-    body: any;
-    headers: Headers;
-  };
-  state: Record<string, any>;
-}
+import { reactive } from './core/base/reactivity/reactive.ts';
+import { ServerState } from "./core/base/persistence/stateClient.ts";
+import { effect } from "./core/base/reactivity/reactive.ts";
 
-const skyeServer = new SkyeServer();
-const effect = new Effects()
+// Map to store individual WebSocket connections and states (for personalized state)
+const clients = new Map<WebSocket, ServerState>();
 
-// Middleware
-skyeServer.use(loggerMiddleware);
-skyeServer.use(contentTypeMiddleware);
-skyeServer.use(errorHandler);
-skyeServer.use(jsonParser);
-skyeServer.use(corsMiddleware);
+// Global state for broadcasting to all clients
+const globalState: ServerState = reactive({
+  count: 0,
+  message: "Global State: Welcome to the application!",
+});
 
-skyeServer.route("GET", "/static/:filename", async (ctx) => {
-  const filename = ctx.request.params.filename;
-  const filePath = join(Deno.cwd(), "public", filename);
-  console.log(filePath);
+// Choose whether to use global or personalized state per client
+const useGlobalState = false; // Toggle between global and individual state
 
-  try {
-    const content = await Deno.readFile(filePath);
-    const ext = filename.split(".").pop();
-    const contentType = getContentType(ext);
-    ctx.response.headers.set("Content-Type", contentType);
-    ctx.response.body = content;
-  } catch (error) {
-    console.error(`Error serving static file ${filename}:`, error);
-    ctx.response.status = 404;
-    ctx.response.body = "File not found";
+const port = 8080;
+
+const handler = async (request: Request): Promise<Response> => {
+  if (request.headers.get("upgrade") === "websocket") {
+    const { socket, response } = Deno.upgradeWebSocket(request);
+
+    if (useGlobalState) {
+      handleGlobalWebSocket(socket);
+    } else {
+      handlePersonalWebSocket(socket);
+    }
+
+    return response;
   }
-});
 
-function getContentType(ext: string | undefined): string {
-  const mimeTypes: Record<string, string> = {
-    css: "text/css",
-    js: "application/javascript",
-    html: "text/html",
-    png: "image/png",
-    jpg: "image/jpeg",
-    jpeg: "image/jpeg",
-    svg: "image/svg+xml",
-    // Add other MIME types as needed
+  return new Response("Not a WebSocket request", { status: 400 });
+};
+
+// Serve the handler
+Deno.serve({ port }, handler);
+
+console.log(`WebSocket server running on ws://localhost:${port}`);
+
+// Handle WebSocket connections for global state broadcasting
+function handleGlobalWebSocket(socket: WebSocket) {
+  console.log("Client connected to global state");
+
+  // Send initial global state to the client
+  socket.send(JSON.stringify(globalState));
+
+  // Listen for incoming messages from the client
+  socket.onmessage = (event) => {
+    const clientUpdate = JSON.parse(event.data);
+    Object.assign(globalState, clientUpdate); // Update global state reactively
   };
-  return mimeTypes[ext || ""] || "application/octet-stream";
+
+  socket.onclose = () => {
+    console.log("Client disconnected from global state");
+  };
+
+  socket.onerror = (e) => {
+    console.error("WebSocket error:", e);
+  };
+
+  // Broadcast global state changes to all connected clients
+  effect({
+    syncState() {
+      // Broadcast the global state to every connected client
+      clients.forEach((_clientState, clientSocket) => {
+        clientSocket.send(JSON.stringify(globalState));
+      });
+    }
+  });
 }
 
-skyeServer.route("GET", "/welcome", async (ctx: Context) => {
-  const data = effect.reactive({
-    title: "Welcome to Skye Framework",
-    user: { isLoggedIn: true, name: "Alice" },
+// Handle WebSocket connections for personalized client state
+function handlePersonalWebSocket(socket: WebSocket) {
+  console.log("Client connected with personalized state");
+
+  // Initialize a personalized state for each client
+  const clientState: ServerState = reactive({
+    count: 0,
+    message: "Personalized State: Welcome to your session!",
   });
-  const templatePath = join(
-    Deno.cwd(),
-    "src",
-    "server",
-    "static",
-    "welcome.html"
-  );
-  console.log(templatePath);
 
-  const renderedContent = await renderTemplate(templatePath, data);
-  console.log(renderedContent);
-  ctx.response.headers.set("Content-Type", "text/html");
-  ctx.response.body = renderedContent;
-});
+  // Store the client WebSocket and state
+  clients.set(socket, clientState);
 
-skyeServer.route("*", "*", async (ctx) => {
-  ctx.response.status = 404;
-  ctx.response.body = "404 Not Found";
-});
+  // Send the initial personalized state to the client
+  socket.send(JSON.stringify(clientState));
 
-// Autoload routes
-// for await (const dirEntry of Deno.readDir('.server/routes')) {
-//   if (dirEntry.isFile && dirEntry.name.endsWith('.ts')) {
-//     const routeModule = await import(`./routes/${dirEntry.name}`);
-//     if (routeModule.default) {
-//       routeModule.default(skyeServer);
-//     }
-//   }
-// }
+  // Listen for incoming messages from the client
+  socket.onmessage = (event) => {
+    const clientUpdate = JSON.parse(event.data);
+    Object.assign(clientState, clientUpdate); // Update the client's personalized state
+  };
 
-// for (const [path, config] of Object.entries(routes)) {
-// skyeServer.route("GET", path, async (ctx) => {
-//     const _data = await config.fetchData(ctx.request.params);
-//     const renderedContent = config.template
+  socket.onclose = () => {
+    console.log("Client disconnected from personalized state");
+    // Remove the client from the map
+    clients.delete(socket);
+  };
 
-//     ctx.response.headers.set("Content-Type", "text/html");
-//     ctx.response.body = renderedContent;
-//   });
-// }
+  socket.onerror = (e) => {
+    console.error("WebSocket error:", e);
+  };
 
-// Start the server
-console.log("Server running on http://localhost:8000");
-Deno.serve({ hostname: "0.0.0.0", port: 8000 }, (req) => {
-  console.log(Deno.cwd());
-  return skyeServer.handleRequest(req);
-});
+  // Automatically send state updates to the client
+  effect({
+    syncState() {
+      socket.send(JSON.stringify(clientState));  // Sync the personalized state
+    }
+  });
+}

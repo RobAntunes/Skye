@@ -1,12 +1,48 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Skye SSR and Templating Engine Tests</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <meta charset="UTF-8" />
+  <title>Skye Framework with Custom State Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      margin-bottom: 40px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    ul {
+      list-style-type: disc;
+      padding-left: 20px;
+    }
+  </style>
 </head>
 <body>
-  <!-- The content will be injected by the server-rendered templates -->
-  <script src="./app.js"></script> <!-- Include only necessary JS -->
+  <h1>Skye Framework with Custom State Management</h1>
+
+  <div class="container">
+    <h2>User Profile</h2>
+    <user-profile></user-profile> <!-- Ensure this component is implemented -->
+  </div>
+
+  <div class="container">
+    <h2>Send Notifications</h2>
+    <notification-sender></notification-sender>
+    <notification-receiver></notification-receiver>
+  </div>
+
+  <!-- Include Your Web Components and Dependencies -->
+  <script type="module">
+    // Import the components to ensure they are registered
+    import './components/NotificationSender.ts';
+    import './components/NotificationReceiver.ts';
+    // Import other components as needed, e.g., UserProfile.ts
+  </script>
 </body>
 </html>

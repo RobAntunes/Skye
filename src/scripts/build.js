@@ -34,11 +34,13 @@ const htmlFiles = await getAllHTMLFiles("./src/client");
 // Run Esbuild for bundling JS/TS files
 esbuild
   .build({
-    entryPoints: ["src/client/main.ts"],
-    bundle: true,
-    outfile: "dist/main.js",
+    entryPoints: ["src/server/server.ts"],
+    outdir: "../../public/dist",
+    outfile: "../../public/dist/main.js",
+    outExtension: { ".ts": ".js" },
     format: "esm",
     target: ["es2020"],
+    platform: "browser",
     sourcemap: true,
     minify: false,
     plugins: [...denoPlugins()],

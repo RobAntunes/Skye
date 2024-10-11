@@ -1,12 +1,8 @@
 {
   "tasks": {
-    "dev": "deno run --watch --allow-read --allow-write --allow-net src/server/server.ts",
-    "build": "deno run --allow-all ./src/scripts/build.js"
+    "dev": "deno run --watch --allow-read --allow-write --allow-net src/server/server.ts"
   },
-  "imports": {
-    "@noble/hashes": "npm:@noble/hashes@^1.5.0",
-    "@std/assert": "jsr:@std/assert@1"
-  },
+  "imports": {},
   "compilerOptions": {
     "lib": ["dom", "deno.ns", "esnext", "deno.worker"],
     "strict": true,
@@ -15,6 +11,5 @@
     "noUnusedParameters": true,
     "noImplicitAny": true
   },
-  "include": ["src/**/*.ts"],
-  "nodeModulesDir": "auto"
+  "include": ["src/server/**/*.ts", "src/client/**/*.ts"]
 }

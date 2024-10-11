@@ -1,4 +1,4 @@
-import { reactive } from "../core/base/reactivity/Effects.ts";
+import { reactive } from "../core/base/reactivity/EventEmitter.ts";
 import type { Context, Middleware } from "../server.ts";
 
 // Server-side reactivity

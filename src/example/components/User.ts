@@ -1,7 +1,7 @@
 // src/components/UserProfile.ts
 
-import { Base } from "../../server/core/components/Components.ts";
-import { effect } from "../../server/core/base/reactivity/Effects.ts";
+import { Base } from "../../server/core/components/Component.ts";
+import { effects } from "../../server/core/base/reactivity/Effect.ts";
 import { skye } from "../../server/templates/render.ts";
 
 /**
@@ -25,7 +25,7 @@ export class UserProfile extends Base<UserProfileState> {
   constructor() {
     super();
     // Initialize reactive state
-    this.state = effect.reactive<UserProfileState>({
+    this.state = effects.reactive<UserProfileState>({
       user: null,
       loading: false,
       error: null,
@@ -82,7 +82,7 @@ export class UserProfile extends Base<UserProfileState> {
    */
   protected onMount(): void {
     // Subscribe to async operation completion
-    effect.on("operationComplete", this.handleUserUpdate);
+    effects.on("operationComplete", this.handleUserUpdate);
 
     // Initiate fetching user data
     this.fetchUserData();
@@ -93,7 +93,7 @@ export class UserProfile extends Base<UserProfileState> {
    */
   protected onUnmount(): void {
     // Cleanup event listeners
-    effect.off("operationComplete", this.handleUserUpdate);
+    effects.off("operationComplete", this.handleUserUpdate);
   }
 
   /**
@@ -117,7 +117,7 @@ export class UserProfile extends Base<UserProfileState> {
     this.state.loading = true;
 
     try {
-      await effect.obtain(fetchUserDataFromAPI, {
+      await effects.obtain(fetchUserDataFromAPI, {
         cache: true, // Enable caching for this operation
         retries: 2, // Retry up to 2 times on failure
         onStart: () => {
@@ -170,9 +170,9 @@ async function fetchUserDataFromAPI(): Promise<any> {
  * Simulates sending analytics data.
  * @returns A promise that resolves after sending data.
  */
-async function sendAnalyticsData(): Promise<void> {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+// async function sendAnalyticsData(): Promise<void> {
+//   // Simulate network delay
+//   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  console.log("Analytics data sent.");
-}
+//   console.log("Analytics data sent.");
+// }

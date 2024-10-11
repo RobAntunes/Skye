@@ -90,7 +90,7 @@ export class SkyeServer {
   
     // Ensure Content-Type header is set
     if (!ctx.response.headers.has("Content-Type")) {
-      ctx.response.headers.set("Content-Type", "application/json");
+      ctx.response.headers.set("Content-Type", "application/javascript");
     }
   
     return new Response(responseBody, {

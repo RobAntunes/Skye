@@ -1,6 +1,7 @@
 // services/templateRenderer.ts
 
 import { encodeHex } from "jsr:@std/encoding/hex";
+import { crypto as cryptoDeno } from "jsr:@std/crypto";
 
 // The skye function to handle template strings and expressions
 
@@ -45,7 +46,10 @@ export function sanitize(input: unknown): string {
 
 export function preprocessTemplate(template: string): string {
   // Step 1: Handle skye function calls
-  const skyeExprRegex = /{{\s*skye`([\s\S]+?)`\s*}}/g;
+  const skyeExprRegex = new RegExp(
+    "\\{\\{\\s*skye`([\\s\\S]+?)`\\s*\\}\\}",
+    "g"
+  );
   let processedTemplate = template.replace(skyeExprRegex, (_, code) => {
     return `\${(() => { 
       const result = skye\`${code}\`; 
@@ -54,7 +58,7 @@ export function preprocessTemplate(template: string): string {
   });
 
   // Step 2: Replace remaining {{ ... }} with ${ ... } for variable interpolation
-  const placeholderRegex = /{{\s*([\s\S]+?)\s*}}/g;
+  const placeholderRegex = new RegExp("\\{\\{\\s*([\\s\\S]+?)\\s*\\}\\}", "g");
   processedTemplate = processedTemplate.replace(placeholderRegex, (_, code) => {
     return `\${sanitize(${code.trim()})}`;
   });
@@ -66,22 +70,40 @@ export function createTemplateFunction(
   templateString: string
 ): (context: Record<string, any>) => string {
   return (context: Record<string, any>) => {
+    const { skye: contextSkye, sanitize: contextSanitize, ...rest } = context;
+
+    // Escape special characters in the template string
+    const escapedTemplate = templateString
+      .replace(/\\/g, "\\\\")
+      .replace(/`/g, "\\`")
+      .replace(/\$/g, "\\$")
+      .replace(/\r/g, "\\r")
+      .replace(/\n/g, "\\n")
+      .replace(/\t/g, "\\t");
+
     const functionBody = `
-      with ({...context, skye, sanitize}) {
-        return \`${templateString}\`;
+      const skye = contextSkye;
+      const sanitize = contextSanitize;
+      try {
+        return \`${escapedTemplate}\`;
+      } catch (error) {
+        console.error("Error in template:", error);
+        return \`Error rendering template: \${error.message}\`;
       }
     `;
+
     try {
       const renderFunc = new Function(
-        "context",
-        "skye",
-        "sanitize",
+        "contextSkye",
+        "contextSanitize",
+        "rest",
         functionBody
       );
-      return renderFunc(context, skye, sanitize);
+      return renderFunc(contextSkye, contextSanitize, rest);
     } catch (error) {
-      console.error("Template rendering error:", error);
-      return "";
+      console.error("Error creating template function:", error);
+      console.error("Template string:", templateString);
+      return `Error creating template function: ${(error as Error).message}`;
     }
   };
 }
@@ -97,7 +119,8 @@ export async function renderTemplate(
     return templateFunction(context);
   } catch (error) {
     console.error("Error rendering template:", error);
-    return "Internal Server Error";
+    console.error("Template path:", templatePath);
+    return `Error rendering template: ${(error as Error).message}`;
   }
 }
 
@@ -105,7 +128,7 @@ export async function renderTemplate(
 export async function hashTemplate(template: string): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(template);
-  const hashBuffer = await crypto.subtle.digest("BLAKE3", data);
+  const hashBuffer = await cryptoDeno.subtle.digest("BLAKE3", data);
   const hashArray = new Uint8Array(hashBuffer);
   const hashHex = encodeHex(hashArray);
   return hashHex;
