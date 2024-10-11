@@ -114,8 +114,10 @@ effect({
 
 Effect Shorthand Syntax: The effect syntax is simplified using object notation, so developers can register multiple effects in one place.
 ```ts
-effect(() => {
-  console.log(`Count is: ${state.count}`);
+effect({
+  logCount() {
+	console.log(`Count is: ${state.count}`);
+  }
 });
 
 state.count = 1;  // Triggers the effect and logs "Count is: 1"
