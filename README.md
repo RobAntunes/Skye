@@ -109,7 +109,10 @@ import { effect } from './reactivity/effect.ts';
 
 effect({
   logCount() {
-    console.log('Count is:', state.count);
+    console.log('Count is: ', state.count);
+  },
+  isEven() {
+    console.log("Count is even: ", state.count % 2 == 0);
   }
 });
 ```
